@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { SectionHeader } from '../common/SectionHeader';
 import { ALGORITHM_TOPICS } from '../../data/algorithms';
+import { ALGORITHM_DEFENSE_QA } from '../../data/algorithmDefenseQA';
+import type { AlgorithmDefenseQAItem } from '../../data/algorithmDefenseQA';
 import type { AlgorithmTopic, TabType } from '../../types';
 import {
   BookOpen,
@@ -12,6 +14,13 @@ import {
   Layers,
   ArrowRight,
   Sparkles,
+  HelpCircle,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  AlertTriangle,
+  CheckCircle2,
+  FileCode,
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { AlphaBetaVisualizer } from '../widgets/AlphaBetaVisualizer';
@@ -30,6 +39,8 @@ export const TheorySection: React.FC<TheorySectionProps> = ({ onNavigate, target
     targetTopicId || ALGORITHM_TOPICS[0].id
   );
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
+  const [showAllAnswers, setShowAllAnswers] = useState<boolean>(false);
 
   const categories = [
     'all',
@@ -47,6 +58,34 @@ export const TheorySection: React.FC<TheorySectionProps> = ({ onNavigate, target
 
   const currentTopic =
     ALGORITHM_TOPICS.find((t) => t.id === selectedTopicId) || ALGORITHM_TOPICS[0];
+
+  const defenseQAList = ALGORITHM_DEFENSE_QA[currentTopic.id] || [];
+
+  const toggleAnswer = (id: string) => {
+    setRevealedAnswers((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleToggleAll = () => {
+    const nextState = !showAllAnswers;
+    setShowAllAnswers(nextState);
+    const updated: Record<string, boolean> = {};
+    defenseQAList.forEach((item) => {
+      updated[item.id] = nextState;
+    });
+    setRevealedAnswers(updated);
+  };
+
+  const getTargetCodeTab = (fileName?: string): TabType => {
+    if (!fileName) return 'code-map';
+    if (fileName.includes('search')) return 'code-search';
+    if (fileName.includes('eval')) return 'code-eval';
+    if (fileName.includes('time')) return 'code-time';
+    if (fileName.includes('bot')) return 'code-bot';
+    return 'code-map';
+  };
 
   const renderWidget = (type?: string) => {
     switch (type) {
@@ -210,20 +249,245 @@ export const TheorySection: React.FC<TheorySectionProps> = ({ onNavigate, target
               </div>
             </div>
 
-            {/* Defense Points */}
-            <div>
-              <div className="font-bold text-emerald-400 text-xs mb-2 flex items-center gap-1.5">
-                <Shield className="w-4 h-4" /> Các câu hỏi vấn đáp giảng viên có thể chất vấn:
-              </div>
-              <div className="space-y-2">
-                {currentTopic.defensePoints.map((dp, i) => (
-                  <div
-                    key={i}
-                    className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-slate-200 text-xs leading-relaxed"
-                  >
-                    • {dp}
+            {/* Interactive Defense Q&A Box (Click to reveal answers) */}
+            <div className="pt-2">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950 border border-emerald-500/30 shadow-xl space-y-4">
+                {/* Header of Defense Box */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <GraduationCap className="w-5 h-5" />
+                      </div>
+                      <h4 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                        KHUNG VẤN ĐÁP GIẢNG VIÊN (CLICK ĐỂ HIỆN ĐÁP ÁN)
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Mô phỏng phản xạ phòng thủ: Tự trả lời trước, sau đó nhấp vào từng câu hỏi để đối chiếu đáp án chi tiết và dẫn chứng mã nguồn.
+                    </p>
                   </div>
-                ))}
+
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-950/70 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-medium">
+                      {defenseQAList.length} câu hỏi
+                    </span>
+                    {defenseQAList.length > 0 && (
+                      <button
+                        onClick={handleToggleAll}
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition-colors"
+                      >
+                        {showAllAnswers ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Ẩn tất cả</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Hiện tất cả</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* List of Q&A cards */}
+                {defenseQAList.length > 0 ? (
+                  <div className="space-y-3">
+                    {defenseQAList.map((qa) => {
+                      const isRevealed = !!revealedAnswers[qa.id];
+                      return (
+                        <div
+                          key={qa.id}
+                          className={`rounded-xl border transition-all duration-200 overflow-hidden ${
+                            isRevealed
+                              ? 'bg-slate-900/90 border-emerald-500/40 shadow-lg shadow-emerald-950/20'
+                              : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 hover:bg-slate-900/70'
+                          }`}
+                        >
+                          {/* Question clickable toggle */}
+                          <button
+                            onClick={() => toggleAnswer(qa.id)}
+                            className="w-full text-left p-3.5 flex items-start justify-between gap-3 focus:outline-none transition-colors"
+                          >
+                            <div className="space-y-1.5 flex-1">
+                              <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                                <span className="font-mono px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700 font-bold">
+                                  {qa.id}
+                                </span>
+                                <span
+                                  className={`px-2 py-0.5 rounded font-medium border ${
+                                    qa.difficulty === 'basic'
+                                      ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                                      : qa.difficulty === 'medium'
+                                      ? 'bg-sky-950/60 text-sky-300 border-sky-500/30'
+                                      : 'bg-purple-950/60 text-purple-300 border-purple-500/30'
+                                  }`}
+                                >
+                                  {qa.difficulty === 'basic'
+                                    ? 'Cơ bản'
+                                    : qa.difficulty === 'medium'
+                                    ? 'Trung cấp'
+                                    : 'Chuyên sâu'}
+                                </span>
+                                <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">
+                                  {qa.categoryType}
+                                </span>
+                              </div>
+                              <h5 className="text-xs sm:text-sm font-semibold text-white leading-snug flex items-start gap-2">
+                                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                                <span>{qa.question}</span>
+                              </h5>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                              <span
+                                className={`text-[11px] font-medium px-2 py-1 rounded-md transition-colors hidden sm:inline-flex items-center gap-1 ${
+                                  isRevealed
+                                    ? 'bg-slate-800 text-slate-300'
+                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                                }`}
+                              >
+                                {isRevealed ? (
+                                  <>
+                                    <EyeOff className="w-3.5 h-3.5" /> Ẩn đáp án
+                                  </>
+                                ) : (
+                                  <>
+                                    <Eye className="w-3.5 h-3.5" /> Mở đáp án
+                                  </>
+                                )}
+                              </span>
+                              <div
+                                className={`p-1.5 rounded-lg border transition-all ${
+                                  isRevealed
+                                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                    : 'bg-slate-800 text-slate-400 border-slate-700'
+                                }`}
+                              >
+                                {isRevealed ? (
+                                  <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4" />
+                                )}
+                              </div>
+                            </div>
+                          </button>
+
+                          {/* Collapsible Answer Body */}
+                          {isRevealed && (
+                            <div className="px-4 pb-4 pt-1 space-y-3 border-t border-slate-800/80 animate-in fade-in duration-200">
+                              {/* 1. Quick Pitch */}
+                              <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-xs">
+                                <div className="font-bold text-emerald-400 mb-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                                  ⚡ Phản xạ 30 giây (Trả lời ngắn gọn, tự tin):
+                                </div>
+                                <p className="text-slate-100 leading-relaxed font-sans">
+                                  {qa.quickPitch}
+                                </p>
+                              </div>
+
+                              {/* 2. Deep Academic Explanation */}
+                              <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs">
+                                <div className="font-bold text-sky-400 mb-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                                  <BookOpen className="w-3.5 h-3.5 text-sky-400" />
+                                  📖 Cơ sở lý thuyết & Báo cáo kỹ thuật:
+                                </div>
+                                <p className="text-slate-300 leading-relaxed font-sans">
+                                  {qa.deepExplanation}
+                                </p>
+                              </div>
+
+                              {/* 3. Code Reference if available */}
+                              {qa.codeRef && (
+                                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                  <div className="flex items-center gap-2">
+                                    <FileCode className="w-4 h-4 text-emerald-400" />
+                                    <span className="text-slate-400 text-[11px]">Dẫn chứng mã nguồn:</span>
+                                    <span className="font-mono text-emerald-300 font-semibold text-[11px]">
+                                      {qa.codeRef.file}
+                                    </span>
+                                    <span className="text-slate-500 text-[10px]">→</span>
+                                    <span className="font-mono text-cyan-300 text-[11px]">
+                                      {qa.codeRef.functionName}()
+                                    </span>
+                                    <span className="text-slate-400 text-[10px]">
+                                      ({qa.codeRef.lines})
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onNavigate(
+                                        getTargetCodeTab(qa.codeRef?.file),
+                                        qa.codeRef?.functionName
+                                      );
+                                    }}
+                                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[11px] font-medium border border-slate-700 transition-colors flex items-center gap-1"
+                                  >
+                                    Xem hàm này <ArrowRight className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+
+                              {/* 4. Teacher Follow-up Question if available */}
+                              {qa.teacherFollowUp && (
+                                <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs space-y-1.5">
+                                  <div className="font-bold text-amber-400 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                                    ⚠️ Giảng viên chất vấn thêm (Follow-up Question):
+                                  </div>
+                                  <p className="text-amber-200/90 font-medium italic">
+                                    "{qa.teacherFollowUp.question}"
+                                  </p>
+                                  <div className="pt-1 text-slate-200 leading-relaxed border-t border-amber-500/20 text-[11px]">
+                                    <span className="font-bold text-emerald-400 mr-1">Cách đối đáp:</span>
+                                    {qa.teacherFollowUp.answer}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {currentTopic.defensePoints.map((dp, i) => (
+                      <div
+                        key={i}
+                        className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-slate-200 text-xs leading-relaxed"
+                      >
+                        • {dp}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Additional Defense Checklist if topic has defensePoints */}
+                {defenseQAList.length > 0 && currentTopic.defensePoints.length > 0 && (
+                  <div className="pt-2 border-t border-slate-800/80">
+                    <span className="text-[11px] font-bold text-slate-400 block mb-2 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      Trọng điểm ghi nhớ nhanh khi bảo vệ thuật toán này:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {currentTopic.defensePoints.map((dp, i) => (
+                        <div
+                          key={i}
+                          className="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-[11px] leading-relaxed flex items-start gap-1.5"
+                        >
+                          <span className="text-emerald-400 shrink-0 font-bold">•</span>
+                          <span>{dp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
