@@ -61,6 +61,7 @@ export const QuestionsBankSection: React.FC<QuestionsBankSectionProps> = ({
       case 'code':
         return 'amber';
       case 'scenario':
+      default:
         return 'rose';
     }
   };

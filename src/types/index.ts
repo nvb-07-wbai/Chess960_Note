@@ -1,11 +1,19 @@
 export type TabType =
   | 'overview'
   | 'architecture'
+  | 'lifecycle-flow'
+  | 'code-map'
   | 'code-bot'
   | 'code-search'
   | 'code-eval'
   | 'code-time'
+  | 'function-dossiers'
   | 'theory'
+  | 'parameters'
+  | 'case-studies'
+  | 'general-qa'
+  | 'member-qa'
+  | 'defense-simulator'
   | 'chess960'
   | 'qa'
   | 'practice'
@@ -43,7 +51,7 @@ export interface CodeModule {
   rawCode: string;
 }
 
-export type QuestionCategory = 'general' | 'code' | 'scenario';
+export type QuestionCategory = 'general' | 'code' | 'scenario' | 'member' | 'parameter' | 'member-role' | 'member-cross';
 export type QuestionDifficulty = 'basic' | 'medium' | 'advanced';
 
 export interface QAQuestion {
@@ -62,6 +70,96 @@ export interface QAQuestion {
   teacherFollowUp: string;
   exampleScenario?: string;
   tags: string[];
+}
+
+export interface StructuredAnswer {
+  quickPitch: string;
+  deepExplanation: string;
+  executionFlow?: string[];
+  codeRef?: {
+    file: string;
+    functionName: string;
+    lines: string;
+  };
+  concreteExample?: string;
+  teacherFollowUps?: {
+    question: string;
+    answer: string;
+  }[];
+  commonMistakes?: string[];
+}
+
+export interface DefenseQuestion {
+  id: string;
+  title: string;
+  question: string;
+  category: QuestionCategory;
+  topic: 'project-overview' | 'architecture' | 'search' | 'evaluation' | 'time-management' | 'chess960' | 'experiment' | 'trade-offs' | 'code';
+  memberTarget?: 'bach' | 'long' | 'viet' | 'vuong' | 'all';
+  memberRole?: string;
+  difficulty: 'basic' | 'medium' | 'advanced';
+  answer: StructuredAnswer;
+  tags?: string[];
+}
+
+export interface FunctionDossier {
+  id: string;
+  name: string;
+  file: string;
+  className?: string;
+  lineSpan?: string;
+  signature: string;
+  role: string;
+  isCore: boolean;
+  inputDescription: string;
+  outputDescription: string;
+  stepSequence: string[];
+  whyChosen: string;
+  failureScenario: string;
+  teacherTrap: string;
+  memoryDefense: string;
+}
+
+export interface ParameterDossier {
+  id: string;
+  name: string;
+  file: string;
+  functionOrScope?: string;
+  currentValue: string;
+  unit?: string;
+  category: 'search' | 'time' | 'eval' | 'pruning' | 'memory' | string;
+  originType?: 'theoretical' | 'formula-derived' | 'heuristic-designed' | 'benchmark-tuned' | 'empirical-default' | string;
+  roleInAlgorithm?: string;
+  whyChosen: string;
+  ifIncreased: string;
+  ifDecreased: string;
+  whyNotOther?: string;
+  experimentalProof?: string;
+  defenseScript: string;
+}
+
+export interface CaseStudyDossier {
+  id: string;
+  matchId: string;
+  frcId: number;
+  moveNumber: number;
+  color: 'Trắng' | 'Đen';
+  movePlayed: string;
+  thinkingTimeMs: number;
+  evalScore: string;
+  deltaCp: string;
+  outcomeType: 'mate' | 'timeout-win' | 'material-gain' | 'missed-win' | 'draw' | 'depth-barrier' | string;
+  tacticalTheme: string;
+  boardStateDesc: string;
+  tacticalIssue: string;
+  botChoiceReason: string;
+  keyAlgorithmResponsible: string;
+  relatedFunctions?: string[];
+  activeHeuristicOrThreshold?: string;
+  betterAlternative?: string;
+  actualOutcome: string;
+  ifRedoneHowToImprove: string;
+  teacherDefenseNotes: string;
 }
 
 export interface AlgorithmTopic {

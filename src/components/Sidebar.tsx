@@ -11,7 +11,10 @@ import {
   Clock,
   Shield,
   FileCheck2,
-  ChevronRight,
+  Users,
+  Sliders,
+  Swords,
+  Award,
 } from 'lucide-react';
 import type { TabType } from '../types';
 
@@ -43,11 +46,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navSections: NavSection[] = [
     {
-      group: 'TỔNG QUAN',
+      group: 'HỆ THỐNG VẤN ĐÁP ĐỈNH CAO',
+      items: [
+        {
+          id: 'defense-simulator' as TabType,
+          label: 'Phòng Mô Phỏng Vấn Đáp',
+          icon: <Award className="w-4 h-4 text-rose-400" />,
+          badge: 'No-Code',
+        },
+        {
+          id: 'general-qa' as TabType,
+          label: 'Ngân hàng vấn đáp chung',
+          icon: <HelpCircle className="w-4 h-4 text-blue-400" />,
+          badge: '32 câu',
+        },
+        {
+          id: 'member-qa' as TabType,
+          label: 'Vấn đáp theo thành viên',
+          icon: <Users className="w-4 h-4 text-emerald-400" />,
+          badge: '64 câu',
+        },
+        {
+          id: 'function-dossiers' as TabType,
+          label: 'Hồ sơ 25 Hàm & Lớp',
+          icon: <Layers className="w-4 h-4 text-amber-400" />,
+          badge: 'Full AST',
+        },
+        {
+          id: 'parameters' as TabType,
+          label: 'Tại sao lại là con số này?',
+          icon: <Sliders className="w-4 h-4 text-cyan-400" />,
+          badge: '12 tham số',
+        },
+        {
+          id: 'case-studies' as TabType,
+          label: 'Phân tích 10 ván thực chiến',
+          icon: <Swords className="w-4 h-4 text-purple-400" />,
+          badge: 'Bảng 10',
+        },
+      ],
+    },
+    {
+      group: 'TỔNG QUAN DỰ ÁN',
       items: [
         {
           id: 'overview' as TabType,
-          label: 'Tổng quan dự án',
+          label: 'Tổng quan bài toán',
           icon: <Home className="w-4 h-4" />,
           badge: 'Nhóm 12',
         },
@@ -56,6 +100,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           label: 'Kiến trúc & Vòng đời',
           icon: <Cpu className="w-4 h-4" />,
           badge: 'Sơ đồ',
+        },
+        {
+          id: 'theory' as TabType,
+          label: 'Lý thuyết thuật toán',
+          icon: <BookOpen className="w-4 h-4 text-cyan-400" />,
+          badge: '15 chủ đề',
+        },
+        {
+          id: 'chess960' as TabType,
+          label: 'Chess960 & Luật thi đấu',
+          icon: <FileCode className="w-4 h-4 text-indigo-400" />,
+          badge: '960 thế',
+        },
+        {
+          id: 'glossary' as TabType,
+          label: 'Bảng thuật ngữ AI',
+          icon: <BookOpen className="w-4 h-4 text-purple-400" />,
+          badge: '35 từ',
         },
       ],
     },
@@ -85,46 +147,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           label: 'time_manager.py (Thời gian)',
           icon: <Clock className="w-4 h-4 text-amber-400" />,
           meta: '199 dòng',
-        },
-      ],
-    },
-    {
-      group: 'LÝ THUYẾT & THỂ THỨC',
-      items: [
-        {
-          id: 'theory' as TabType,
-          label: 'Lý thuyết thuật toán',
-          icon: <BookOpen className="w-4 h-4 text-cyan-400" />,
-          badge: '15 chủ đề',
-        },
-        {
-          id: 'chess960' as TabType,
-          label: 'Chess960 & Luật thi đấu',
-          icon: <FileCode className="w-4 h-4 text-indigo-400" />,
-          badge: '960 thế',
-        },
-      ],
-    },
-    {
-      group: 'VẤN ĐÁP & LUYỆN TẬP',
-      items: [
-        {
-          id: 'qa' as TabType,
-          label: 'Ngân hàng câu hỏi',
-          icon: <HelpCircle className="w-4 h-4 text-emerald-400" />,
-          badge: '48 câu',
-        },
-        {
-          id: 'practice' as TabType,
-          label: 'Chế độ luyện vấn đáp',
-          icon: <Sparkles className="w-4 h-4 text-amber-400" />,
-          badge: 'Flashcard',
-        },
-        {
-          id: 'glossary' as TabType,
-          label: 'Bảng thuật ngữ AI',
-          icon: <BookOpen className="w-4 h-4 text-purple-400" />,
-          badge: '35 từ',
         },
       ],
     },

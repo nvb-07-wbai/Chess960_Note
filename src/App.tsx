@@ -12,11 +12,20 @@ import { QuestionsBankSection } from './components/sections/QuestionsBankSection
 import { PracticeQuizSection } from './components/sections/PracticeQuizSection';
 import { GlossarySection } from './components/sections/GlossarySection';
 import { SourceMapSection } from './components/sections/SourceMapSection';
+
+// Newly added specialized oral defense components
+import { OralDefenseSimulatorSection } from './components/sections/OralDefenseSimulatorSection';
+import { FunctionDossiersSection } from './components/sections/FunctionDossiersSection';
+import { ParameterGuideSection } from './components/sections/ParameterGuideSection';
+import { CaseStudiesSection } from './components/sections/CaseStudiesSection';
+import { GeneralQASection } from './components/sections/GeneralQASection';
+import { MemberQASection } from './components/sections/MemberQASection';
+
 import { PROJECT_METADATA } from './data/teamInfo';
-import { Menu, ArrowUp, GitCommit, Heart } from 'lucide-react';
+import { Menu, ArrowUp } from 'lucide-react';
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<TabType>('overview');
+  const [currentTab, setCurrentTab] = useState<TabType>('defense-simulator');
   const [targetId, setTargetId] = useState<string | undefined>(undefined);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -64,6 +73,12 @@ export function App() {
         'practice',
         'glossary',
         'source-map',
+        'defense-simulator',
+        'function-dossiers',
+        'parameters',
+        'case-studies',
+        'general-qa',
+        'member-qa',
       ];
       if (validTabs.includes(hash as TabType)) {
         setCurrentTab(hash as TabType);
@@ -136,6 +151,15 @@ export function App() {
         {/* Main Content Pane */}
         <main className="flex-1 lg:pl-64 min-w-0 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            {/* New Defense Modules */}
+            {currentTab === 'defense-simulator' && <OralDefenseSimulatorSection />}
+            {currentTab === 'function-dossiers' && <FunctionDossiersSection />}
+            {currentTab === 'parameters' && <ParameterGuideSection />}
+            {currentTab === 'case-studies' && <CaseStudiesSection />}
+            {currentTab === 'general-qa' && <GeneralQASection />}
+            {currentTab === 'member-qa' && <MemberQASection />}
+
+            {/* Existing Foundations */}
             {currentTab === 'overview' && <OverviewSection onNavigate={handleNavigate} />}
             {currentTab === 'architecture' && <ArchitectureSection onNavigate={handleNavigate} />}
             {currentTab === 'code-bot' && (
