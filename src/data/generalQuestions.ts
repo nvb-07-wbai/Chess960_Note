@@ -5041,7 +5041,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phương pháp thực nghiệm trong Báo cáo Chương 5: 1. Tiêu chí kết quả thi đấu (Elo & Win Rate): Thước đo tối thượng của một bot cờ vua là khả năng chiến thắng. Phiên bản mới phải đạt ít nhất 55% tỷ lệ điểm trước phiên bản cũ trên cả hai màu quân (Trắng và Đen) và trên các thế cờ Chess960 ngẫu nhiên. 2. Tiêu chí hiệu năng tính toán: Độ sâu trung bình (Search Depth): Nếu tham số Move Ordering mới tốt hơn, bot phải đạt độ sâu sâu hơn 0.5 - 1 ply trong cùng một khoảng thời gian. NPS (Nodes Per Second): Nếu thêm các thuật toán lượng giá phức tạp mà làm NPS tụt giảm quá 30%, lợi thế tri thức không bù đắp được sự sụt giảm độ sâu tìm kiếm. 3. Tiêu chí chiến thuật: Tỷ lệ giải đúng các bài toán chiến thuật test suite tăng lên và không mắc lỗi bỏ quân không có chủ đích.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "iterative_deepening_search",
+        "functionName": "Searcher.search",
         "lines": "L60-110"
       },
       "teacherFollowUps": [
@@ -5109,7 +5109,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "1. Nguyên tắc kỹ thuật thực tế (Engineering Trade-off): Khi không có môi trường chạy hàng chục ngàn ván tự động với Bayesian Optimization, việc xác định biên độ an toàn phải căn cứ vào 'kịch bản xấu nhất' (Worst-case Scenario). 2. Phân tích kịch bản xấu nhất: Trong hệ thống chấm thi đấu thực tế của môn học, bot chạy qua tiến trình con Python giao tiếp qua pipe (stdin/stdout). Độ trễ đọc/ghi I/O, thời gian phân mảnh bộ nhớ và độ trễ chuyển ngữ cảnh của hệ điều hành dao động trong khoảng 50-150ms. Ở tàn cuộc khi thời gian còn 5 giây, 15% mang lại khoảng đệm 750ms, vừa đủ để bot gửi ngay nước đi khẩn cấp và bảo toàn ván cờ. 3. Bằng chứng thực nghiệm: Báo cáo chỉ ra Nhóm 12 là một trong những bot duy nhất có tỷ lệ thua do Timeout là đúng 0% trong toàn bộ giải đấu.",
       "codeRef": {
         "file": "student/time_manager.py",
-        "functionName": "allocate_time",
+        "functionName": "compute_budget_ms",
         "lines": "L35-65"
       },
       "teacherFollowUps": [
@@ -5143,7 +5143,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo lý thuyết tìm kiếm đối kháng và công thức phân nhánh: 1. Hàm tăng trưởng nút duyệt: Số lượng nút ở độ sâu d xấp xỉ O(b^d) đối với Minimax thuần túy, và O(b_eff^d) đối với Alpha-Beta với nước đi sắp xếp tốt. 2. Minh họa số học cụ thể: Ở độ sâu 4 ply với b_eff = 3: N(4) ≈ 3^4 = 81 nút; Ở độ sâu 5 ply: N(5) ≈ 3^5 = 243 nút (tăng gấp 3 lần); Ở độ sâu 8 ply: N(8) ≈ 3^8 = 6,561 nút (tăng gấp 81 lần so với độ sâu 4). 3. Kết luận thực tế: Tăng gấp đôi thời gian chỉ đủ để mở rộng thêm một phần của độ sâu tiếp theo (fractional ply), chứ không thể đạt thêm 1 ply trọn vẹn nếu nhánh đó có nhiều nước bắt quân hoặc không tìm được Alpha-cutoff sớm.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "iterative_deepening_search",
+        "functionName": "Searcher.search",
         "lines": "L65-115"
       },
       "teacherFollowUps": [
@@ -5177,7 +5177,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phân tích tổng thể trong Báo cáo BTL: 1. Mối quan hệ tương hỗ: NPS cao + Evaluate nông = Duyệt sâu nhưng 'mù quáng' về thế trận tàn cuộc hoặc cấu trúc Tốt yếu. NPS thấp + Evaluate sâu sắc = Hiểu sâu thế trận nhưng 'mù' chiến thuật ngắn hạn do không kịp duyệt các biến thể bắt quân 4-5 ply. 2. Thời gian chạy là ràng buộc cứng: Trong môi trường thi đấu có đồng hồ bấm giờ, một thuật toán dù hoàn hảo về lý thuyết nhưng chạy quá 1 mili-giây so với quy định cũng sẽ bị xử thua 0 điểm. 3. Kết luận phương pháp luận: Một cải tiến được coi là thành công khi và chỉ khi: Chất lượng nước đi tăng (thắng nhiều hơn) trong khi NPS được duy trì ở mức ổn định (không giảm quá 10%) và thời gian phản hồi tuân thủ tuyệt đối giới hạn an toàn.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L40-80"
       },
       "teacherFollowUps": [
@@ -5211,7 +5211,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo cơ chế duyệt cây trong Báo cáo mục 4.2 và student/search.py: 1. Cơ chế Stack của python-chess: Thư viện python-chess không tạo bản sao bàn cờ (không dùng `copy.deepcopy(board)`) ở mỗi nút tìm kiếm để tối ưu hóa hiệu năng và tránh cấp phát RAM. Thay vào đó, nó biến đổi trạng thái trực tiếp trên cùng một đối tượng `board` duy nhất. 2. Hậu quả khi lệch push/pop: Nếu ở một nút lá có điều kiện thoát sớm (early return) mà lập trình viên quên gọi `board.pop()`, bàn cờ tại nút cha sẽ mang trạng thái của nút con. Khi nhánh tiếp theo được duyệt, nó sẽ thực hiện trên một bàn cờ giả tưởng, khiến toàn bộ cây tìm kiếm bị méo mó. 3. Biện pháp kỹ thuật: Nhóm bảo đảm cấu trúc lặp kinh điển: `board.push(m) -> score = -alpha_beta(...) -> board.pop()`, hoặc bọc trong khối try...finally để đảm bảo pop() luôn được gọi ngay cả khi xảy ra ngắt quãng.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L320-370"
       },
       "teacherFollowUps": [
@@ -5241,11 +5241,11 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "topic": "code",
     "difficulty": "medium",
     "answer": {
-      "quickPitch": "Dạ thưa thầy, nếu phát sinh ngoại lệ chưa được xử lý giữa push() và pop(), luồng thực thi bị ngắt ngay lập tức, lệnh pop() bị bỏ qua khiến bàn cờ bị 'mắc kẹt' ở trạng thái của nước đi thử nghiệm. Khi luồng quay trở lại hàm get_move, bot sẽ tính toán nước đi trên một thế cờ sai lệch hoàn toàn so với bàn cờ thực tế của trọng tài, dẫn đến việc bot gửi một nước đi không hợp lệ (Illegal Move) và bị xử thua ngay lập tức.",
+      "quickPitch": "Dạ thưa thầy, nếu phát sinh ngoại lệ chưa được xử lý giữa push() và pop(), luồng thực thi bị ngắt ngay lập tức, lệnh pop() bị bỏ qua khiến bàn cờ bị 'mắc kẹt' ở trạng thái của nước đi thử nghiệm. Khi luồng quay trở lại phương thức choose_move, bot sẽ tính toán nước đi trên một thế cờ sai lệch hoàn toàn so với bàn cờ thực tế của trọng tài, dẫn đến việc bot gửi một nước đi không hợp lệ (Illegal Move) và bị xử thua ngay lập tức.",
       "deepExplanation": "1. Luồng ngoại lệ trong Python: Khi một exception (như IndexError, MemoryError, hoặc TimeOutException do ngắt tiến trình) phát sinh, Python lập tức dỡ bỏ các khung ngăn xếp (unwind stack frames) cho đến khi gặp khối `except`. Các dòng code phía sau dòng gây lỗi sẽ bị bỏ qua hoàn toàn. 2. Tác động tới trạng thái bàn cờ: Nếu ngoại lệ xảy ra sau `board.push(m)`, nước đi `m` vẫn nằm trong `board.move_stack`. Bàn cờ đang ở trạng thái 'đã đi nước m'. Đối thủ thật sự trên bàn cờ chưa đi nước đó, dẫn tới sự mất đồng bộ tuyệt đối giữa Bot và Server thi đấu. 3. Giải pháp khắc phục: Trong `search.py`, mọi đoạn mã kiểm tra thời gian hết hạn (`time.perf_counter() > deadline`) chỉ đặt cờ báo hiệu `timeout_flag = True` và trả về kết quả dự phòng một cách êm thấm, không ném exception tùy tiện giữa vòng lặp push/pop.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L330-365"
       },
       "teacherFollowUps": [
@@ -5279,7 +5279,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "1. Cơ chế đảm bảo của Python runtime: Khối `finally` được thiết kế để dọn dẹp tài nguyên (Resource Cleanup). Khi có lệnh `return` hoặc `raise` trong `try`, trình thông dịch Python sẽ tạm dừng hành vi thoát, chuyển con trỏ sang thực thi toàn bộ thân hàm `finally`, rồi mới hoàn tất lệnh return/raise. 2. Ứng dụng trong tìm kiếm cờ vua: ```python\nboard.push(move)\ntry:\n    score = -self.alpha_beta(board, depth - 1, -beta, -alpha, ply + 1)\nfinally:\n    board.pop()\n``` Cấu trúc này loại bỏ hoàn toàn khả năng sót lệnh pop() khi hàm con trả về sớm hoặc timeout. 3. Tính độc lập của logic: Giúp tách rời logic tính toán điểm số (có thể có rủi ro) khỏi trách nhiệm duy trì tính toàn vẹn của đối tượng `board` dùng chung.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L335-375"
       },
       "teacherFollowUps": [
@@ -5310,10 +5310,10 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "difficulty": "medium",
     "answer": {
       "quickPitch": "Dạ thưa thầy, vì Unit Test chỉ kiểm tra 'tính đúng đắn về mặt phần mềm' (hàm không crash, nước đi hợp luật, thời gian không âm), chứ không thể kiểm tra 'tính thông minh về mặt chiến thuật' của bot trong môi trường động. Một bot không bao giờ đi sai luật vẫn có thể có hàm lượng giá ngô nghê, bị hiệu ứng đường chân trời, hoặc không biết phối hợp quân ở tàn cuộc, dẫn đến việc liên tục chọn các nước đi kém cỏi và thất bại.",
-      "deepExplanation": "Theo đúc kết thực nghiệm trong Báo cáo Chương 5: 1. Sự khác biệt giữa Software Correctness và AI Quality: - Unit Test: Đảm bảo `get_move()` trả về một `chess.Move` hợp lệ trong `board.legal_moves`, hàm `evaluate()` không văng lỗi khi bàn cờ trống quân, `allocate_time()` trả về số thực > 0. - AI Quality: Đòi hỏi bot phải hiểu được các thế cờ phức tạp, đánh giá đúng giá trị tương đối của các vị trí, tính toán sâu các đòn bẫy và thích ứng trước chiến thuật của đối phương. 2. Các điểm mù mà Unit Test thông thường bỏ sót: - Hiệu ứng đường chân trời (Horizon Effect): Bỏ qua một đòn bắt Hậu ở ply thứ 5 vì chỉ test ở depth 2. - Rung lắc đồng hồ (Time Jitter): Unit test chạy trên môi trường cục bộ máy đơn lẻ không đo được độ trễ mạng hay quá tải CPU máy chủ khi thi đấu nhiều ván song song. - Điểm yếu tàn cuộc: Unit test hiếm khi mô phỏng một ván đấu kéo dài 100 nước nơi Vua cần phải chủ động tham chiến.",
+      "deepExplanation": "Theo đúc kết thực nghiệm trong Báo cáo Chương 5: 1. Sự khác biệt giữa Software Correctness và AI Quality: - Unit Test: Đảm bảo `choose_move()` trả về một `chess.Move` hợp lệ trong `board.legal_moves`, hàm `evaluate()` không văng lỗi khi bàn cờ trống quân, `compute_budget_ms()` trả về số thực > 0. - AI Quality: Đòi hỏi bot phải hiểu được các thế cờ phức tạp, đánh giá đúng giá trị tương đối của các vị trí, tính toán sâu các đòn bẫy và thích ứng trước chiến thuật của đối phương. 2. Các điểm mù mà Unit Test thông thường bỏ sót: - Hiệu ứng đường chân trời (Horizon Effect): Bỏ qua một đòn bắt Hậu ở ply thứ 5 vì chỉ test ở depth 2. - Rung lắc đồng hồ (Time Jitter): Unit test chạy trên môi trường cục bộ máy đơn lẻ không đo được độ trễ mạng hay quá tải CPU máy chủ khi thi đấu nhiều ván song song. - Điểm yếu tàn cuộc: Unit test hiếm khi mô phỏng một ván đấu kéo dài 100 nước nơi Vua cần phải chủ động tham chiến.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L45-80"
       },
       "teacherFollowUps": [
@@ -5323,7 +5323,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
         },
         {
           "question": "Tại sao giải đấu ChessLab lại là thước đo kiểm thử chân thực nhất?",
-          "answer": "Dạ, vì giải đấu đưa bot đối đầu trực tiếp với 24 bot khác nhau của các nhóm trong điều kiện áp lực thời gian thực, bộc lộ mọi điểm yếu về tâm lý thuật toán và khả năng phân bổ thời gian."
+          "answer": "Dạ, vì giải đấu đưa bot đối đầu trực tiếp với 12 đối thủ trong 48 ván đấu vòng tròn hai lượt trong điều kiện áp lực thời gian thực, bộc lộ mọi điểm yếu về tâm lý thuật toán và khả năng phân bổ thời gian."
         }
       ]
     },
@@ -5377,11 +5377,11 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "topic": "testing",
     "difficulty": "medium",
     "answer": {
-      "quickPitch": "Dạ thưa thầy, để kiểm tra tính tất định, ta cho bot chạy hàm get_move 5 đến 10 lần liên tiếp trên cùng một chuỗi FEN với cùng một độ sâu cố định (không phụ thuộc đồng hồ). Nếu bot trả về cùng một nước đi tốt nhất và cùng một điểm số đánh giá, bot có tính tất định. Tính tất định là điều kiện tiên quyết để tái hiện (reproduce) và cô lập lỗi trong quá trình gỡ lỗi thuật toán.",
+      "quickPitch": "Dạ thưa thầy, để kiểm tra tính tất định, ta cho bot chạy phương thức choose_move 5 đến 10 lần liên tiếp trên cùng một chuỗi FEN với cùng một độ sâu cố định (không phụ thuộc đồng hồ). Nếu bot trả về cùng một nước đi tốt nhất và cùng một điểm số đánh giá, bot có tính tất định. Tính tất định là điều kiện tiên quyết để tái hiện (reproduce) và cô lập lỗi trong quá trình gỡ lỗi thuật toán.",
       "deepExplanation": "1. Các nguyên nhân gây ra tính bất định (Non-determinism) trong bot AI: - Sử dụng hàm ngẫu nhiên ngầm (`random.choice` khi có các nước bằng điểm nhau mà không cố định seed). - Phụ thuộc vào đồng hồ thực tế (`time.perf_counter()`): Ở mỗi lần chạy, do hệ điều hành bận các tác vụ nền khác nhau, bot duyệt được số nút khác nhau trước khi bị ngắt, dẫn tới kết quả trả về khác nhau. - Lưu vết Transposition Table: Nếu TT không được dọn dẹp (clear) giữa các lần kiểm tra, dữ liệu từ lần tìm kiếm trước sẽ ảnh hưởng đến thứ tự duyệt của lần tìm kiếm sau. 2. Phương pháp kiểm thử chuẩn: Nhóm viết bài test cố định độ sâu `depth = 4`, xóa trắng Transposition Table và bảng History trước mỗi lần chạy (`tt.clear()`), sau đó khẳng định `assert best_move_1 == best_move_2` và `assert score_1 == score_2`.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "iterative_deepening_search",
+        "functionName": "Searcher.search",
         "lines": "L65-110"
       },
       "teacherFollowUps": [
@@ -5449,7 +5449,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phương pháp điều tra lỗi trong Báo cáo Chương 5: 1. Bước 1: Tái hiện bằng FEN tại thời điểm xảy ra sai lầm: Lấy chuỗi FEN của thế cờ từ file log thi đấu, cho bot chạy độc lập với log chi tiết các thông số (PV line, TT hit, depth, alpha-beta window). 2. Bước 2: Phân tích đường đi tốt nhất (Principal Variation): - Nếu nước đi sai lầm có điểm số rất cao trong mắt bot (+400 cp) nhưng thực tế là nước thí quân chết: Lỗi nằm ở hàm `evaluate()` đã cho điểm vị trí quá cao làm lu mờ sự mất mát quân cờ. - Nếu bot nghĩ rằng điểm số là cân bằng nhưng đối phương có nước phản đòn chiếu hết sau 3 nước: Lỗi nằm ở độ sâu tìm kiếm (`depth` quá nông) hoặc Quiescence Search không kiểm tra các nước chiếu (checks). 3. Bước 3: Kiểm tra Transposition Table: Xem có hiện tượng va chạm băm hoặc lưu nhầm cờ BOUND_EXACT của nhánh bị cắt tỉa hay không.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L50-80"
       },
       "teacherFollowUps": [
@@ -5483,7 +5483,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phân tích đánh đổi thuật toán trong Báo cáo mục 4.3: 1. Bản chất của Cắt tỉa (Pruning): Alpha-Beta cơ bản là cắt tỉa bảo tồn (sound pruning) - không bao giờ bỏ sót nước tối ưu. Tuy nhiên các kỹ thuật heuristic pruning (như Null Move Pruning, Late Move Reduction, Delta Pruning) là cắt tỉa mạo hiểm (unsound pruning), chấp nhận rủi ro nhỏ để tăng độ sâu tổng thể. 2. Các rào cản kiểm soát rủi ro của nhóm: - Ngăn chặn Zugzwang: Trong Null Move Pruning, nếu bên đi rơi vào thế Zugzwang (bắt buộc phải đi và sẽ thua), việc giả định 'bỏ lượt vẫn an toàn' sẽ dẫn đến kết luận sai lầm. Do đó, nếu tàn cuộc không còn quân nặng (chỉ còn Vua và Tốt), Null Move bị tắt hoàn toàn. - Quiescence Search an toàn: Chỉ mở rộng các nước bắt quân và nước phong Tốt, sử dụng Delta Pruning với ngưỡng an toàn `DELTA_MARGIN = 200` (giá trị hơn 2 Tốt) để tránh cắt nhầm các pha thí quân lấy lại quân sau đó.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "quiescence_search",
+        "functionName": "Searcher._quiescence",
         "lines": "L260-310"
       },
       "teacherFollowUps": [
@@ -5517,7 +5517,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo tiêu chuẩn thi đấu cờ máy trình bày trong Báo cáo Chương 5: 1. Thiên vị màu quân (Color Bias): Quân Trắng có quyền chủ động khai cuộc, có thể gây sức ép ngay lập tức. Nếu một bot chỉ được test khi cầm quân Trắng, nó có thể che giấu được điểm yếu phòng thủ thụ động. 2. Phương pháp Pairwise Benchmark: Khi đánh giá Bot A và Bot B trên một thế cờ FEN: - Ván 1: Bot A cầm Trắng, Bot B cầm Đen. - Ván 2: Đổi lại Bot B cầm Trắng, Bot A cầm Đen trên đúng thế cờ FEN đó. 3. Kết luận: Bằng cách này, mọi lợi thế về mặt thế trận vốn có của thế cờ hoặc màu quân đều được chia đều cho cả hai bot. Điểm số chênh lệch sau 2 ván phản ánh 100% năng lực tính toán và lượng giá của thuật toán.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L30-60"
       },
       "teacherFollowUps": [
@@ -5551,7 +5551,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo Báo cáo mục 4.2 và xử lý tình huống biên: 1. Tình huống nước đi duy nhất (Forced Move): Nếu chỉ có một lựa chọn duy nhất (ví dụ bị chiếu bắt buộc phải né Vua vào một ô duy nhất), việc chạy cây tìm kiếm sâu 5 ply là hoàn toàn lãng phí thời gian. Trong `bot.py` hoặc `search.py`, kiểm tra `len(legal_moves) == 1` giúp trả về ngay sau 0.001 giây, dồn toàn bộ ngân sách thời gian đó cho các nước đi phức tạp sau. 2. Tình huống bị chiếu: Nếu đang bị chiếu, không được phép cắt tỉa Null Move (vì đối phương đang đe dọa trực tiếp ăn Vua, không thể giả định bỏ lượt). Các nước đi giải chiếu phải được đưa lên đầu danh sách sắp xếp. 3. Tình huống kết thúc ván: Phân biệt rạch ròi giữa chiếu hết (thua tuyệt đối, -100,000 điểm) và hòa Pat (hòa cuộc, 0 điểm). Nếu lượng giá nhầm hòa Pat thành thua, bot sẽ bỏ lỡ cơ hội thủ hòa khi đang bị đối phương áp đảo vật chất.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L310-340"
       },
       "teacherFollowUps": [
@@ -5582,10 +5582,10 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "difficulty": "medium",
     "answer": {
       "quickPitch": "Dạ thưa thầy, quy trình kiểm thử hồi quy của nhóm gồm 3 chốt chặn: (1) Chạy tự động bộ Unit Test kiểm tra tính toàn vẹn giao diện API (không đổi kiểu dữ liệu đầu vào/đầu ra); (2) Chạy bộ bài toán chiến thuật cố định 20 thế cờ (Tactical Suite) để đo xem số bài giải đúng có bị tụt giảm không; (3) Chạy ván đấu đối đầu tự động 10 ván với phiên bản trước đó trên git để đo NPS và kiểm tra ngoại lệ runtime.",
-      "deepExplanation": "Theo quy trình phát triển phần mềm của nhóm trong Báo cáo Chương 6: 1. Kiểm thử giao diện (Interface Regression): Đảm bảo các hàm công khai như `evaluate(board)`, `get_move(context)`, `allocate_time(context)` giữ nguyên chữ ký hàm (signature). Nếu một tham số mới được thêm vào, nó phải có giá trị mặc định để tránh phá vỡ mã nguồn gọi nó từ các file khác. 2. Kiểm thử hành vi chức năng (Behavioral Regression): - Sử dụng file test chứa các thế FEN kinh điển (ví dụ thế đòn bắt đôi, chiếu hết sau 2 nước). Nếu phiên bản mới giải sai một thế cờ mà phiên bản cũ giải đúng, phiên bản mới bị từ chối commit ngay lập tức. 3. Sử dụng Git Branching: Mỗi cải tiến được phát triển trên nhánh riêng (feature branch), chỉ được merge vào nhánh chính sau khi vượt qua toàn bộ kịch bản kiểm thử.",
+      "deepExplanation": "Theo quy trình phát triển phần mềm của nhóm trong Báo cáo Chương 6: 1. Kiểm thử giao diện (Interface Regression): Đảm bảo các hàm công khai như `evaluate(board)`, `StudentBot.choose_move(board)`, `compute_budget_ms(context, board)` giữ nguyên chữ ký hàm (signature). Nếu một tham số mới được thêm vào, nó phải có giá trị mặc định để tránh phá vỡ mã nguồn gọi nó từ các file khác. 2. Kiểm thử hành vi chức năng (Behavioral Regression): - Sử dụng file test chứa các thế FEN kinh điển (ví dụ thế đòn bắt đôi, chiếu hết sau 2 nước). Nếu phiên bản mới giải sai một thế cờ mà phiên bản cũ giải đúng, phiên bản mới bị từ chối commit ngay lập tức. 3. Sử dụng Git Branching: Mỗi cải tiến được phát triển trên nhánh riêng (feature branch), chỉ được merge vào nhánh chính sau khi vượt qua toàn bộ kịch bản kiểm thử.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L30-70"
       },
       "teacherFollowUps": [
@@ -5619,7 +5619,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "1. Cơ sở toán học về đánh giá năng lực AI cờ vua: Cảm tính của người lập trình ('thấy bot đi nước này nhìn hay hơn') thường hoàn toàn sai lệch. Phương pháp chuẩn quốc tế là tính toán chênh lệch hệ số Elo theo công thức: `ΔElo = -400 * log10(1 / S - 1)` trong đó `S` là tỷ lệ điểm đạt được (`S = (W + D/2) / N`). 2. Phân tích khoảng tin cậy (Confidence Interval): Với 30 ván đấu, nếu bản mới thắng 18, hòa 4, thua 8 (tỷ lệ điểm S = 66.7%), thì ΔElo ước tính là +120 Elo với độ tin cậy 95%. 3. Đo lường chỉ số vận hành hệ thống: Ngoài Elo, bản cập nhật thành công phải giữ vững chỉ số ổn định hệ thống: Mức tiêu thụ bộ nhớ RAM ổn định dưới 50 MiB, CPU 100% không bị nghẽn I/O, và không phát sinh bất kỳ ngoại lệ nào trong log thi đấu.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "iterative_deepening_search",
+        "functionName": "Searcher.search",
         "lines": "L80-120"
       },
       "teacherFollowUps": [
@@ -5649,11 +5649,11 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "topic": "experiment",
     "difficulty": "advanced",
     "answer": {
-      "quickPitch": "Dạ thưa thầy, kết quả 49 điểm (xếp hạng 16/25) phản ánh chính xác 2 mặt thực tế: (1) Điểm mạnh: Chiến lược quản lý thời gian tuyệt đối ổn định giúp bot thắng trọn vẹn 16 ván trước các bot yếu hoặc trung bình, đặc biệt không để thua bất kỳ ván nào do lỗi kỹ thuật hay timeout; (2) Hạn chế cốt lõi: Ngôn ngữ Python thuần và hàm lượng giá đơn giản khiến tốc độ duyệt chỉ đạt 30,000 NPS (độ sâu 4-5 ply), hoàn toàn bị lép vế trước các đội top đầu đạt độ sâu 6-8 ply bằng Cython/C++ hoặc bitboard tối ưu cao.",
-      "deepExplanation": "Theo phân tích sâu trong Báo cáo Chương 5: 1. Thống kê kết quả thực tế: - Tổng số ván đấu: 48 ván (thể thức vòng tròn tính điểm với 24 đội đối thủ, mỗi đội đấu 2 lượt đi và về). - Thắng: 16 ván (33.33%). - Hòa: 1 ván (2.08%). - Thua: 31 ván (64.58%). 2. Phân tầng đối thủ: - Nhóm bot dưới (Hạng 17 - 25): Nhóm 12 chiến thắng áp đảo nhờ khả năng khai thác lỗi ngớ ngẩn (blunder) của đối phương bằng thuật toán MVV-LVA và bảo toàn quân tốt. - Nhóm bot trên (Hạng 1 - 10): Nhóm 12 thất bại chủ yếu do thua thiệt về độ sâu tính toán trung cuộc. Ở độ sâu 4 ply, bot không nhìn thấy các đòn phối hợp chiến thuật 3 nước (6 ply) của đối thủ mạnh. 3. Kết luận: Đây là kết quả trung thực, phản ánh đúng giới hạn trần hiệu năng của kiến trúc Python thuần khi không can thiệp thư viện mã nguồn gốc (C extensions).",
+      "quickPitch": "Dạ thưa thầy, kết quả 49 điểm (xếp hạng 10/13 trên bảng tổng sắp chính thức) phản ánh chính xác 2 mặt thực tế: (1) Điểm mạnh: Chiến lược quản lý thời gian tuyệt đối ổn định giúp bot thắng trọn vẹn 16 ván trước các bot yếu hoặc trung bình, đặc biệt không để thua bất kỳ ván nào do lỗi kỹ thuật hay timeout; (2) Hạn chế cốt lõi: Ngôn ngữ Python thuần và hàm lượng giá đơn giản khiến tốc độ duyệt chỉ đạt 30,000 NPS (độ sâu 4-5 ply), hoàn toàn bị lép vế trước các đội top đầu đạt độ sâu 6-8 ply bằng Cython/C++ hoặc bitboard tối ưu cao.",
+      "deepExplanation": "Theo phân tích sâu trong Báo cáo Chương 5: 1. Thống kê kết quả thực tế: - Tổng số ván đấu: 48 ván (thể thức vòng tròn tính điểm với 12 đội đối thủ trong giải đấu vòng tròn hai lượt (Double Round-Robin), mỗi đội đấu 2 lượt đi và về). - Thắng: 16 ván (33.33%). - Hòa: 1 ván (2.08%). - Thua: 31 ván (64.58%). 2. Phân tầng đối thủ: - Nhóm bot dưới (Hạng 17 - 25): Nhóm 12 chiến thắng áp đảo nhờ khả năng khai thác lỗi ngớ ngẩn (blunder) của đối phương bằng thuật toán MVV-LVA và bảo toàn quân tốt. - Nhóm bot trên (Hạng 1 - 10): Nhóm 12 thất bại chủ yếu do thua thiệt về độ sâu tính toán trung cuộc. Ở độ sâu 4 ply, bot không nhìn thấy các đòn phối hợp chiến thuật 3 nước (6 ply) của đối thủ mạnh. 3. Kết luận: Đây là kết quả trung thực, phản ánh đúng giới hạn trần hiệu năng của kiến trúc Python thuần khi không can thiệp thư viện mã nguồn gốc (C extensions).",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "get_move",
+        "functionName": "StudentBot.choose_move",
         "lines": "L35-70"
       },
       "teacherFollowUps": [
@@ -5721,7 +5721,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phân tích nguyên nhân thất bại trong Báo cáo Chương 5: 1. Vai trò của Time Manager: Module `time_manager.py` hoạt động hoàn hảo đúng chức năng thiết kế của nó: Ngăn chặn triệt để nguy cơ vi phạm luật thời gian. Nhóm tự hào là một trong những đội có tính ổn định kỹ thuật cao nhất giải. 2. Nguyên nhân thua cờ thuần túy (Checkmate & Material Loss): Cờ vua là trò chơi đối kháng phức tạp. Khi gặp các bot có hàm lượng giá sâu sắc và độ sâu tìm kiếm xa hơn 2-3 ply: - Ở trung cuộc, đối thủ phát hiện ra các chuỗi phối hợp bắt quân 3 nước (ví dụ: đòn ghim, chiếu mở, bắt đôi). - Bot của nhóm ở độ sâu 4 ply chỉ nhìn thấy các biến thể ngắn hơn, tưởng rằng an toàn nhưng thực tế đã bước vào cái bẫy chiến thuật của đối phương. 3. Kết luận: Sự thất bại là do giới hạn tính toán của công cụ tìm kiếm cờ, hoàn toàn độc lập với sự thành công của bộ phận quản lý thời gian.",
       "codeRef": {
         "file": "student/time_manager.py",
-        "functionName": "allocate_time",
+        "functionName": "compute_budget_ms",
         "lines": "L30-65"
       },
       "teacherFollowUps": [
@@ -5755,7 +5755,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phân tích đối thủ trong Báo cáo Chương 5 và 6: 1. Khoảng cách về ngôn ngữ và công nghệ lõi: - Nhóm 12: Dùng Python thuần với `python-chess`. Tốc độ duyệt bị giới hạn ở 25,000 - 45,000 NPS do chi phí thông dịch mã Python. - Các đội top 1-3: Sử dụng các kỹ thuật tăng tốc như Cython, Rust binding, hoặc tối ưu hóa mảng phẳng bitboard nguyên thủy, đạt tốc độ duyệt gấp 10 lần. 2. Khoảng cách về tri thức cờ (Chess Knowledge): - Các đội mạnh có bảng lượng giá vị trí động thích ứng theo giai đoạn tàn cuộc (Tapered Eval chuyển dịch từ Midgame sang Endgame mượt mà). - Bot của họ nhận diện được các cột mở dành cho Xe và ép Vua đối phương vào góc bàn cờ rất bài bản. 3. Khả năng kết liễu tàn cuộc: Các đội mạnh chuyển hóa ưu thế hơn 1 Tốt thành chiến thắng rất dứt khoát nhờ kỹ thuật đẩy Tốt thông có bảo vệ.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L320-380"
       },
       "teacherFollowUps": [
@@ -5789,7 +5789,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo lý thuyết tìm kiếm cờ máy và thực nghiệm giải đấu: 1. Cấu trúc của một đòn chiến thuật điển hình: - Ply 1: Trắng thí Mã vào ô yếu. - Ply 2: Đen ăn Mã của Trắng (Trắng đang lỗ 3 điểm). - Ply 3: Trắng đẩy Tốt bắt đôi Xe và Tượng. - Ply 4: Đen chạy Xe. (Nếu bot dừng tìm kiếm ở đây tại Ply 4, bot tưởng Trắng vẫn đang lỗ Mã!). - Ply 5: Trắng ăn lại Tượng của Đen. - Ply 6: Đen hoàn tất thế cờ (Trắng lời 1 Tốt và phá hỏng cánh Vua đối phương). 2. Điểm mù 4-ply của Nhóm 12: Bot của nhóm dừng ở ply 4 nên không nhận ra rằng nước thí quân ở ply 1 là một nước đi thiên tài; ngược lại, bot sẽ né tránh nước đi này và chọn một nước thụ động. 3. Lợi thế của đối thủ 6-8 ply: Họ nhìn trọn vẹn toàn bộ chuỗi phối hợp, tự tin tung đòn quyết định để đánh bại bot của nhóm.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "iterative_deepening_search",
+        "functionName": "Searcher.search",
         "lines": "L75-115"
       },
       "teacherFollowUps": [
@@ -5891,7 +5891,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo phân tích ván đấu then chốt POS-05 trong Báo cáo Chương 5: 1. So sánh hai nước đi: - `Qe8+`: Chiếu Vua Đen, nhưng Đen có nước thoái Mã về `Nf8` vừa che chắn Vua vừa củng cố hàng phòng ngự. Cục diện sau đó bị giảm nhiệt và ván cờ rơi vào bế tắc. - `Qd4!`: Nước đi tĩnh tạo thế gọng kìm (Quiet deadly move), kiểm soát toàn bộ các ô thoát hiểm của Vua Đen và đe dọa đòn phối hợp `Qxg7#` sau 3 nước. 2. Khiếm khuyết của thuật toán tại thời điểm đó: - Giới hạn độ sâu: Để nhận diện sức mạnh của `Qd4!`, bot cần tính toán tới ply thứ 6 (Qd4 -> ... -> Qxg7#). Ở ply thứ 4, bot chỉ thấy Qd4 chưa bắt được quân nào và chưa chiếu Vua, nên điểm lượng giá thấp hơn Qe8+. - Thiên vị nước chiếu (Check Bias): Heuristic Move Ordering của bot thưởng điểm cho các nước chiếu, vô tình đẩy một nước chiếu vô hại lên trước một nước đi chiến thuật định đoạt ván cờ.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L320-360"
       },
       "teacherFollowUps": [
@@ -5993,7 +5993,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo thiết kế kiến trúc trong Báo cáo mục 3.2 và 4.1: 1. Triết lý ra quyết định: Bot cờ vua thuần thuật toán tìm kiếm Minimax luôn tối ưu hóa điểm số lượng giá của thế cờ tốt nhất giả định đối thủ đi tối ưu (Game-theoretic optimality). Nó không mô hình hóa tâm lý hay độ hoảng loạn của đối thủ. 2. Sai lầm về chiến thuật thời gian thực: Khi đối thủ còn 5-10 giây, chiến lược thi đấu thực chiến của con người là giữ lại nhiều quân, tạo ra các thế cờ có nhiều nước đi phức tạp và đe dọa hai cánh cùng lúc để đối thủ không kịp suy nghĩ và tự sụp đổ. Quyết định đổi Hậu của bot đã dọn sạch bàn cờ, biến ván đấu thành tàn cuộc đơn giản nơi đối thủ chỉ cần đi các nước Vua hiển nhiên. 3. Kết luận: Đây là giới hạn của hệ thống hiện tại, mở ra hướng phát triển việc tích hợp 'Time-pressure Exploitation Heuristic' trong tương lai.",
       "codeRef": {
         "file": "student/time_manager.py",
-        "functionName": "allocate_time",
+        "functionName": "compute_budget_ms",
         "lines": "L25-60"
       },
       "teacherFollowUps": [
@@ -6027,7 +6027,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo Báo cáo mục 5.2 về tình huống POS-07: 1. Diễn biến thời gian của hai bên: - Nhóm 12: Bắt đầu với 60 giây, ở nước thứ 40 vẫn còn bảo toàn được 28 giây trên đồng hồ nhờ phân phối thời gian hợp lý (tiết kiệm thời gian ở khai cuộc và các nước đi hiển nhiên). - Đối thủ: Dồn quá nhiều thời gian suy nghĩ ở các nước 15-25 (dùng 8-10 giây mỗi nước), đến nước 35 chỉ còn 3 giây. 2. Áp lực từ thuật toán: Khi đối thủ còn ít thời gian, bot Nhóm 12 không chần chừ mà liên tục tung ra các nước đi chất lượng ổn định chỉ sau 1 giây. Đối thủ không có thời gian hồi phục đồng hồ và bị ngắt kết nối do quá giờ xử lý (Timeout Exceeded). 3. Bằng chứng định lượng: Đây là 1 trong 16 ván thắng của nhóm minh chứng cho tính ưu việt của chiến lược quản lý thời gian thận trọng.",
       "codeRef": {
         "file": "student/time_manager.py",
-        "functionName": "allocate_time",
+        "functionName": "compute_budget_ms",
         "lines": "L30-65"
       },
       "teacherFollowUps": [
@@ -6058,10 +6058,10 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
     "difficulty": "medium",
     "answer": {
       "quickPitch": "Dạ thưa thầy, trong ván POS-08, công thức phân phối thời gian động T = remaining_time / estimated_moves_left kết hợp với ngưỡng bảo vệ khẩn cấp (Panic Floor = 1.0 giây) đã phát huy tối đa tác dụng. Khi ván cờ kéo dài sang nước 70, 80, bot tự động co hẹp ngân sách xuống 200-300ms mỗi nước, chỉ tìm kiếm ở độ sâu 2-3 ply nhưng bảo đảm đi nước an toàn và duy trì đồng hồ dương cho tới khi ván cờ khép lại.",
-      "deepExplanation": "Theo Báo cáo mục 4.1 và 5.2 về POS-08: 1. Thách thức của ván cờ marathon: Đa số các bot chia đều thời gian cho 40 nước đi (`time / 40`). Nếu ván cờ kéo dài tới nước 80, các bot đó sẽ hết sạch thời gian từ nước 50 và bị thua timeout. 2. Cơ chế thích ứng của Nhóm 12: - Hàm `allocate_time` liên tục cập nhật: `moves_left = max(15, 45 - ply//2)`. Khi số nước đi vượt quá 45, mẫu số không bao giờ bằng 0 mà luôn duy trì tối thiểu 15 nước đi dự phóng. - Khi thời gian còn dưới 5 giây, bot chuyển sang chế độ khẩn cấp (Panic Mode): Cắt giảm thời gian xuống mức `time * 0.1` và hạ độ sâu tìm kiếm tối thiểu, đảm bảo luôn có nước đi hợp lệ phản hồi trong 100-200ms. 3. Kết quả: Ván đấu kết thúc ở nước 88 mà bot của nhóm vẫn còn 1.8 giây an toàn trên đồng hồ.",
+      "deepExplanation": "Theo Báo cáo mục 4.1 và 5.2 về POS-08: 1. Thách thức của ván cờ marathon: Đa số các bot chia đều thời gian cho 40 nước đi (`time / 40`). Nếu ván cờ kéo dài tới nước 80, các bot đó sẽ hết sạch thời gian từ nước 50 và bị thua timeout. 2. Cơ chế thích ứng của Nhóm 12: - Hàm `compute_budget_ms` liên tục cập nhật: `moves_left = max(15, 45 - ply//2)`. Khi số nước đi vượt quá 45, mẫu số không bao giờ bằng 0 mà luôn duy trì tối thiểu 15 nước đi dự phóng. - Khi thời gian còn dưới 5 giây, bot chuyển sang chế độ khẩn cấp (Panic Mode): Cắt giảm thời gian xuống mức `time * 0.1` và hạ độ sâu tìm kiếm tối thiểu, đảm bảo luôn có nước đi hợp lệ phản hồi trong 100-200ms. 3. Kết quả: Ván đấu kết thúc ở nước 88 mà bot của nhóm vẫn còn 1.8 giây an toàn trên đồng hồ.",
       "codeRef": {
         "file": "student/time_manager.py",
-        "functionName": "allocate_time",
+        "functionName": "compute_budget_ms",
         "lines": "L35-70"
       },
       "teacherFollowUps": [
@@ -6129,7 +6129,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo Báo cáo mục 5.2 về phân tích thất bại then chốt POS-10: 1. Diễn biến cụ thể của chuỗi nước đi: - Ply 1: Bot Nhóm 12 đi `Nxe5` (ăn Tốt đối phương). - Ply 2: Đối thủ đi nước thoái lui chuẩn bị `Kh8`. - Ply 3: Bot củng cố thế trận bằng `d4`. - Ply 4: Đối thủ đi nước gài bẫy `Qe7`. (Tại đây, cây tìm kiếm của bot chạm ngưỡng depth 4 và dừng lại. Bot đánh giá mình đang hoàn toàn an toàn và hơn 1 Tốt). - Ply 5 (Thực tế trên bàn cờ): Đối thủ bất ngờ tung nước `Bxh2+!` (chiếu mở Vua Trắng). - Ply 6: Vua Trắng buộc phải ăn Tượng hoặc chạy, đối phương lập tức dùng Hậu ăn Hậu Trắng ở e7. 2. Bản chất kỹ thuật: Đây là ví dụ điển hình của việc thiếu độ sâu tìm kiếm trong các thế cờ có sự đan xen giữa nước đi chiến thuật và nước chiếu không bắt quân, nơi Quiescence Search không được kích hoạt để mở rộng.",
       "codeRef": {
         "file": "student/search.py",
-        "functionName": "alpha_beta",
+        "functionName": "Searcher._negamax",
         "lines": "L320-370"
       },
       "teacherFollowUps": [
@@ -6197,7 +6197,7 @@ export const GENERAL_QUESTIONS: DefenseQuestion[] = [
       "deepExplanation": "Theo đúc kết bài học trong Báo cáo Chương 6: 1. Giá trị của việc đối đầu thực tế: Nếu chỉ chạy bot trong môi trường đóng cục bộ (self-play), nhóm sẽ không bao giờ nhìn thấy các khiếm khuyết trong Move Ordering hay việc ngộ nhận thế cờ đổi Hậu. Những ván thua trước các đối thủ xuất sắc là nguồn dữ liệu quý báu nhất để định vị năng lực thực sự của thuật toán. 2. Bài học về tối ưu hóa hệ thống: Nhóm hiểu rằng trong các bài toán tìm kiếm không gian lớn, việc lựa chọn cấu trúc dữ liệu và tối ưu hóa ở mức vi xử lý (như bitboard, cache alignment) quan trọng không kém gì việc thiết kế thuật toán cấp cao. 3. Ý nghĩa môn học: Dự án đã giúp các thành viên chuyển hóa toàn bộ kiến thức lý thuyết về tìm kiếm đối kháng, hàm lượng giá heuristic và quản lý ràng buộc thời gian thành một sản phẩm phần mềm thực thụ có khả năng thi đấu tự động.",
       "codeRef": {
         "file": "student/bot.py",
-        "functionName": "BotGroup12",
+        "functionName": "StudentBot",
         "lines": "L15-50"
       },
       "teacherFollowUps": [

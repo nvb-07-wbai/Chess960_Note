@@ -19,10 +19,10 @@ export const MemberQASection: React.FC = () => {
   }, []);
 
   const members = [
-    { id: 'bach', name: 'Nông Văn Bách', role: 'Trưởng nhóm – Kiến trúc, IPC, bot.py, time_manager.py', count: memberCounts['bach'] || 21 },
-    { id: 'long', name: 'Vũ Hoàng Long', role: 'Thuật toán tìm kiếm & Alpha-Beta, IDS (search.py)', count: memberCounts['long'] || 21 },
-    { id: 'viet', name: 'Lê Văn Việt', role: 'Đánh giá thế cờ PeSTO 32-bit & King Safety (evaluation.py)', count: memberCounts['viet'] || 21 },
-    { id: 'vuong', name: 'Đỗ Thành Vương', role: 'Sắp xếp nước đi 8 bậc, SEE, Quiescence & Cắt tỉa (search.py)', count: memberCounts['vuong'] || 22 },
+    { id: 'bach', name: 'Nông Văn Bách', role: 'Trưởng nhóm – Kiến trúc tổng thể, IPC, bot.py, time_manager.py, TranspositionTable (30%)', count: memberCounts['bach'] || 21 },
+    { id: 'long', name: 'Vũ Hoàng Long', role: 'Động cơ tìm kiếm Negamax PVS, IDS, Aspiration Windows (search.py) (25%)', count: memberCounts['long'] || 21 },
+    { id: 'viet', name: 'Lê Văn Việt', role: 'Hàm lượng giá PeSTO 32-bit, Dynamic King Ring, Mop-Up (evaluation.py) (25%)', count: memberCounts['viet'] || 21 },
+    { id: 'vuong', name: 'Đỗ Thành Vương', role: 'Move Ordering 8 bậc Heuristic, SEE 1-ply, Quiescence & Pruning (search.py) (20%)', count: memberCounts['vuong'] || 22 },
   ];
 
   const currentMemberInfo = members.find((m) => m.id === selectedMember) || members[0];
