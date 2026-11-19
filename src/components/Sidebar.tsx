@@ -15,6 +15,7 @@ import {
   Sliders,
   Swords,
   Award,
+  Target,
 } from 'lucide-react';
 import type { TabType } from '../types';
 
@@ -83,6 +84,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           label: 'Phân tích 10 ván thực chiến',
           icon: <Swords className="w-4 h-4 text-purple-400" />,
           badge: 'Bảng 10',
+        },
+        {
+          id: 'predict-move' as TabType,
+          label: 'Dự đoán nước đi của Bot',
+          icon: <Target className="w-4 h-4 text-emerald-400" />,
+          badge: 'Tình huống',
         },
       ],
     },

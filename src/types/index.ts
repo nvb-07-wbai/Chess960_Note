@@ -14,6 +14,7 @@ export type TabType =
   | 'general-qa'
   | 'member-qa'
   | 'defense-simulator'
+  | 'predict-move'
   | 'chess960'
   | 'qa'
   | 'practice'

@@ -20,6 +20,7 @@ import { ParameterGuideSection } from './components/sections/ParameterGuideSecti
 import { CaseStudiesSection } from './components/sections/CaseStudiesSection';
 import { GeneralQASection } from './components/sections/GeneralQASection';
 import { MemberQASection } from './components/sections/MemberQASection';
+import { BotMovePredictionSection } from './components/sections/BotMovePredictionSection';
 
 import { PROJECT_METADATA } from './data/teamInfo';
 import { Menu, ArrowUp } from 'lucide-react';
@@ -79,6 +80,7 @@ export function App() {
         'case-studies',
         'general-qa',
         'member-qa',
+        'predict-move',
       ];
       if (validTabs.includes(hash as TabType)) {
         setCurrentTab(hash as TabType);
@@ -156,6 +158,9 @@ export function App() {
             {currentTab === 'function-dossiers' && <FunctionDossiersSection />}
             {currentTab === 'parameters' && <ParameterGuideSection />}
             {currentTab === 'case-studies' && <CaseStudiesSection />}
+            {currentTab === 'predict-move' && (
+              <BotMovePredictionSection onNavigate={handleNavigate} />
+            )}
             {currentTab === 'general-qa' && <GeneralQASection />}
             {currentTab === 'member-qa' && <MemberQASection />}
 
