@@ -7,14 +7,26 @@ export const GeneralQASection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const topicCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: GENERAL_QUESTIONS.length };
+    GENERAL_QUESTIONS.forEach((q: DefenseQuestion) => {
+      counts[q.topic] = (counts[q.topic] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
   const topics = [
-    { id: 'all', label: 'Tất cả 32 câu hỏi' },
-    { id: 'project-overview', label: 'Tổng quan bài toán (5)' },
-    { id: 'architecture', label: 'Kiến trúc & Luồng IPC (5)' },
-    { id: 'search', label: 'Thuật toán tìm kiếm (8)' },
-    { id: 'evaluation', label: 'Đánh giá & Tàn cuộc (6)' },
-    { id: 'time-management', label: 'Quản lý thời gian (4)' },
-    { id: 'experiment', label: 'Thực nghiệm giải đấu (4)' },
+    { id: 'all', label: `Tất cả (${topicCounts['all'] || 0})` },
+    { id: 'search', label: `Tìm kiếm (${topicCounts['search'] || 0})` },
+    { id: 'evaluation', label: `Lượng giá (${topicCounts['evaluation'] || 0})` },
+    { id: 'architecture', label: `Kiến trúc (${topicCounts['architecture'] || 0})` },
+    { id: 'code', label: `Đọc hiểu hàm (${topicCounts['code'] || 0})` },
+    { id: 'time-management', label: `Thời gian (${topicCounts['time-management'] || 0})` },
+    { id: 'trade-offs', label: `Tham số & Đánh đổi (${topicCounts['trade-offs'] || 0})` },
+    { id: 'experiment', label: `Thực nghiệm (${topicCounts['experiment'] || 0})` },
+    { id: 'project-overview', label: `Tổng quan (${topicCounts['project-overview'] || 0})` },
+    { id: 'chess960', label: `Chess960 (${topicCounts['chess960'] || 0})` },
+    { id: 'testing', label: `Kiểm thử (${topicCounts['testing'] || 0})` },
   ];
 
   const filteredQuestions = useMemo(() => {
@@ -38,19 +50,19 @@ export const GeneralQASection: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-2">
               <span>📚</span>
-              Bộ câu hỏi chung toàn dự án – 32 câu chuẩn hóa
+              Bộ câu hỏi chung toàn dự án – {GENERAL_QUESTIONS.length} câu chuẩn hóa
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
               Ngân Hàng Vấn Đáp Tổng Hợp (General Q&A)
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
               Bao quát toàn diện từ bài toán Chess960, kiến trúc 10 bước, thuật toán Negamax/Alpha-Beta,
-              đánh giá thế cờ Tapered, quản lý thời gian 3 lớp cho đến thực nghiệm giải đấu 48 ván.
+              đánh giá thế cờ Tapered, quản lý thời gian 3 lớp, đọc hiểu hàm mã nguồn cho đến thực nghiệm giải đấu 48 ván.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700">
-              Đang xem: <strong className="text-blue-400">{filteredQuestions.length}</strong> / 32 câu
+              Đang xem: <strong className="text-blue-400">{filteredQuestions.length}</strong> / {GENERAL_QUESTIONS.length} câu
             </span>
           </div>
         </div>

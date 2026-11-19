@@ -74,14 +74,24 @@ Tất cả 12 tham số đều có: Bản chất thuật toán, Lý do chọn gi
 
 ---
 
-## 4. PHỦ BỘ CÂU HỎI VẤN ĐÁP (96 CÂU HỎI CÓ ĐÁP ÁN ĐẦY ĐỦ)
+## 4. PHỦ TOÀN DIỆN NGÂN HÀNG VẤN ĐÁP (262 CÂU HỎI ĐƯỢC CHUẨN HÓA CÓ ĐÁP ÁN ĐẦY ĐỦ)
 
-- **32 Câu hỏi Chung (General Q&A)**: Phân bố thành 6 nhóm: Bài toán & Chess960, Kiến trúc 10 bước & IPC, Thuật toán tìm kiếm & Alpha-Beta, Đánh giá thế cờ Tapered, Quản lý thời gian 3 lớp, Thực nghiệm giải đấu 48 ván.
-- **64 Câu hỏi Cá nhân & Chất vấn chéo (Member Q&A)**: 16 câu / thành viên (8 câu chuyên trách + 8 câu chất vấn chéo).
-  - **Nông Văn Bách (30% đóng góp)**: 8 câu về kiến trúc bot.py, IPC, TranspositionTable, phối hợp module + 8 câu chéo sang search/eval/move ordering.
-  - **Vũ Hoàng Long (25% đóng góp)**: 8 câu về Negamax, Alpha-Beta, Aspiration Window, 5 tầng tỉa nhánh + 8 câu chéo sang bot/eval/time.
-  - **Lê Văn Việt (25% đóng góp)**: 8 câu về PeSTO packed 32-bit, Bitboard King Safety Ring, Tapered Eval + 8 câu chéo sang search/time/bot.
-  - **Đỗ Thành Vương (20% đóng góp)**: 8 câu về 8 tầng Move Ordering, MVV-LVA, SEE, Time Manager 3 lớp + 8 câu chéo sang eval/search/bot.
+- **177 Câu hỏi Chung (General Q&A)**: Bao quát toàn diện 10 chủ đề theo chuẩn học thuật:
+  - *I. Tư duy thiết kế & Kiến trúc hệ thống* (Q1 - 15): Tách biệt ChessLab Host và StudentBot, luồng dữ liệu 10 bước, giao thức JSON qua pipe stdin/stdout, cô lập lỗi và vòng đời ván đấu.
+  - *II. Đọc hiểu hàm và luồng dữ liệu `student/`* (Q16 - 30): Phân biệt depth vs ply, push/pop stack, đối tượng mutable, hàm công khai vs nội bộ, quy tắc khôi phục trạng thái bàn cờ.
+  - *III. Đi sâu vào `search.py`* (Q31 - 60): Negamax, Alpha-Beta, Move Ordering 4 tầng, MVV-LVA, Killer Moves, History Heuristic, Quiescence Search, Transposition Table 524,288 mục, Zobrist Hash 64-bit.
+  - *IV. Đi sâu vào `evaluation.py`* (Q61 - 86): Tapered Evaluation 4 tầng, bảng Piece-Square Tables (PST) trung hòa cho Chess960, an toàn Vua (King Safety Pawn Shield 15 cp), điểm cặp Tượng (+30 cp), Tốt thông (+20 cp).
+  - *V. Đi sâu vào `time_manager.py`* (Q87 - 100): Phân bổ ngân sách động theo số nước đi dự kiến, chế độ khẩn cấp Panic Mode (dưới 5s), bù đắp jitter truyền thông I/O, kỷ lục 0% lỗi quá giờ trong giải đấu.
+  - *VI. Tham số & Siêu tham số "Tại sao lại là con số này?"* (Q101 - 115): Phân biệt tham số lý thuyết vs tinh chỉnh thực nghiệm, bảo vệ kích thước TT 2^19 (~16 MiB RAM vửa vặn Cache L3), hệ số k_risk = 0.005, khoảng cách điểm Move Ordering.
+  - *VII. Tính đúng đắn & Kiểm thử phần mềm* (Q116 - 128): Cân bằng push/pop bằng try...finally, kiểm thử đối xứng hàm lượng giá qua gương (Mirror Test), tính tất định (Determinism), kiểm thử biên trên 960 thế cờ Chess960.
+  - *VIII. Phân tích kết quả thi đấu & Tình huống POS thực chiến* (Q129 - 145): Phân tích nguyên nhân đạt 49 điểm (16 thắng, 1 hòa, 31 thua), rào cản độ sâu 4-ply trước đối thủ Cython 6-8 ply, giải phẫu POS-01 (đòn ghim cột e), POS-03 (MVV-LVA), POS-05 (bỏ lỡ Qd4), POS-06 (đổi Hậu mất ưu thế), POS-07 (thắng timeout), POS-08 & POS-09 (tàn cuộc marathon 123 nước).
+  - *Tổng quan bài toán & Cơ sở lý thuyết*: Shannon number, không gian trạng thái Chess960, luật nhập thành FRC, triệt tiêu Opening Book.
+
+- **85 Câu hỏi Cá nhân & Chất vấn chéo (Member Q&A)** (21–22 câu / thành viên):
+  - **Nông Văn Bách (MSSV: 25022782 - Trưởng nhóm)**: 21 câu chuyên sâu về kiến trúc hệ thống, điều phối IPC trong `bot.py`, vòng đời nước đi, cơ chế phòng vệ ngoại lệ fallback move, Anytime Algorithm và quản lý mã nguồn Git.
+  - **Vũ Hoàng Long (MSSV: 25022922)**: 21 câu chuyên sâu về quản lý thời gian trong `time_manager.py`, thuật toán phân bổ 3 lớp, hệ số rủi ro k_risk, cơ chế cửa sổ trượt cho ván đấu kéo dài (Marathon Games) và chống jitter mạng.
+  - **Lê Văn Việt (MSSV: 25023069)**: 21 câu chuyên sâu về hàm lượng giá trong `evaluation.py`, lý do trung hòa bảng PST Chess960, thuật toán King Safety (phạt 15 cp/ô mở), điểm cặp Tượng/Tốt thông và kiểm thử đối xứng qua gương.
+  - **Đỗ Thành Vương (MSSV: 25023079)**: 22 câu chuyên sâu về thuật toán tìm kiếm trong `search.py`, bảng băm Transposition Table 2^19 mục, Zobrist Hash 64-bit, hệ thống Move Ordering, Quiescence Search và phân tích đòn chiến thuật bỏ lỡ ở POS-05/POS-10.
 
 ---
 

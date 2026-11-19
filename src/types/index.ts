@@ -51,7 +51,20 @@ export interface CodeModule {
   rawCode: string;
 }
 
-export type QuestionCategory = 'general' | 'code' | 'scenario' | 'member' | 'parameter' | 'member-role' | 'member-cross';
+export type QuestionCategory =
+  | 'general'
+  | 'code'
+  | 'scenario'
+  | 'member'
+  | 'parameter'
+  | 'member-role'
+  | 'member-cross'
+  | 'testing'
+  | 'search'
+  | 'evaluation'
+  | 'time-management'
+  | 'architecture'
+  | 'experiment';
 export type QuestionDifficulty = 'basic' | 'medium' | 'advanced';
 
 export interface QAQuestion {
@@ -94,7 +107,17 @@ export interface DefenseQuestion {
   title: string;
   question: string;
   category: QuestionCategory;
-  topic: 'project-overview' | 'architecture' | 'search' | 'evaluation' | 'time-management' | 'chess960' | 'experiment' | 'trade-offs' | 'code';
+  topic:
+    | 'project-overview'
+    | 'architecture'
+    | 'search'
+    | 'evaluation'
+    | 'time-management'
+    | 'chess960'
+    | 'experiment'
+    | 'trade-offs'
+    | 'code'
+    | 'testing';
   memberTarget?: 'bach' | 'long' | 'viet' | 'vuong' | 'all';
   memberRole?: string;
   difficulty: 'basic' | 'medium' | 'advanced';

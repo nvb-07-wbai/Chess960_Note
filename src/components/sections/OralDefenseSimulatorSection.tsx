@@ -148,7 +148,10 @@ export const OralDefenseSimulatorSection: React.FC = () => {
       case 'exam-random':
       default: {
         const mixed: QuestionItem[] = [];
-        GENERAL_QUESTIONS.slice(0, 10).forEach((q: DefenseQuestion) => {
+        const sampledGen = [...GENERAL_QUESTIONS].sort(() => 0.5 - Math.random()).slice(0, 12);
+        const sampledMem = [...MEMBER_QUESTIONS].sort(() => 0.5 - Math.random()).slice(0, 8);
+
+        sampledGen.forEach((q: DefenseQuestion) => {
           mixed.push({
             id: q.id,
             source: 'ĐỀ THI TỔNG HỢP (Chung)',
@@ -161,6 +164,21 @@ export const OralDefenseSimulatorSection: React.FC = () => {
             checklist: ['Nêu ý tưởng cốt lõi', 'Giải thích kiến trúc', 'Bảo vệ tham số'],
           });
         });
+
+        sampledMem.forEach((q: DefenseQuestion) => {
+          mixed.push({
+            id: q.id,
+            source: `ĐỀ THI TỔNG HỢP (Thành viên: ${q.memberTarget?.toUpperCase()})`,
+            title: q.question,
+            subtitle: `Mã: ${q.id} - ${q.memberRole || ''}`,
+            prompt: q.question,
+            answer30s: q.answer.quickPitch,
+            detail: q.answer.deepExplanation,
+            traps: q.answer.teacherFollowUps?.map((tf) => `${tf.question} -> ${tf.answer}`) || [],
+            checklist: ['Phản xạ 30 giây', 'Luồng dữ liệu & thuật toán', 'Bảo vệ quyết định kỹ thuật'],
+          });
+        });
+
         FUNCTION_DOSSIERS.slice(0, 8).forEach((f: FunctionDossier) => {
           mixed.push({
             id: f.id,

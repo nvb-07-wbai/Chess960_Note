@@ -58,13 +58,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id: 'general-qa' as TabType,
           label: 'Ngân hàng vấn đáp chung',
           icon: <HelpCircle className="w-4 h-4 text-blue-400" />,
-          badge: '32 câu',
+          badge: '177 câu',
         },
         {
           id: 'member-qa' as TabType,
           label: 'Vấn đáp theo thành viên',
           icon: <Users className="w-4 h-4 text-emerald-400" />,
-          badge: '64 câu',
+          badge: '85 câu',
         },
         {
           id: 'function-dossiers' as TabType,

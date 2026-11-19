@@ -8,11 +8,21 @@ export const MemberQASection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const memberCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    MEMBER_QUESTIONS.forEach((q: DefenseQuestion) => {
+      if (q.memberTarget) {
+        counts[q.memberTarget] = (counts[q.memberTarget] || 0) + 1;
+      }
+    });
+    return counts;
+  }, []);
+
   const members = [
-    { id: 'bach', name: 'Nông Văn Bách', role: 'Trưởng nhóm – Kiến trúc, IPC, bot.py, time_manager.py', count: 16 },
-    { id: 'long', name: 'Vũ Hoàng Long', role: 'Thuật toán tìm kiếm & Alpha-Beta, IDS (search.py)', count: 16 },
-    { id: 'viet', name: 'Lê Văn Việt', role: 'Đánh giá thế cờ PeSTO 32-bit & King Safety (evaluation.py)', count: 16 },
-    { id: 'vuong', name: 'Đỗ Thành Vương', role: 'Sắp xếp nước đi 8 bậc, SEE, Quiescence & Cắt tỉa (search.py)', count: 16 },
+    { id: 'bach', name: 'Nông Văn Bách', role: 'Trưởng nhóm – Kiến trúc, IPC, bot.py, time_manager.py', count: memberCounts['bach'] || 21 },
+    { id: 'long', name: 'Vũ Hoàng Long', role: 'Thuật toán tìm kiếm & Alpha-Beta, IDS (search.py)', count: memberCounts['long'] || 21 },
+    { id: 'viet', name: 'Lê Văn Việt', role: 'Đánh giá thế cờ PeSTO 32-bit & King Safety (evaluation.py)', count: memberCounts['viet'] || 21 },
+    { id: 'vuong', name: 'Đỗ Thành Vương', role: 'Sắp xếp nước đi 8 bậc, SEE, Quiescence & Cắt tỉa (search.py)', count: memberCounts['vuong'] || 22 },
   ];
 
   const currentMemberInfo = members.find((m) => m.id === selectedMember) || members[0];
@@ -43,15 +53,15 @@ export const MemberQASection: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
               <span>👤</span>
-              Bộ câu hỏi cá nhân & Chất vấn chéo – 64 câu (16 câu / thành viên)
+              Bộ câu hỏi cá nhân & Chất vấn chéo – {MEMBER_QUESTIONS.length} câu (21–22 câu / thành viên)
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
               Ngân Hàng Vấn Đáp Theo Thành Viên (Member Q&A)
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Mỗi thành viên được trang bị <span className="text-emerald-400 font-semibold">8 câu hỏi chuyên sâu phần việc</span> và{' '}
-              <span className="text-amber-400 font-semibold">8 câu hỏi chất vấn chéo (Cross-examination)</span> để đảm bảo không ai bị động
-              khi thầy cô hỏi sang module của bạn khác.
+              Mỗi thành viên được trang bị đầy đủ <span className="text-emerald-400 font-semibold">câu hỏi chuyên sâu phần việc</span>,{' '}
+              <span className="text-cyan-400 font-semibold">câu hỏi bảo vệ kiến trúc & tham số</span> và{' '}
+              <span className="text-amber-400 font-semibold">câu hỏi chất vấn chéo (Cross-examination)</span> để tự tin trả lời khi thầy cô đào sâu vào bất kỳ module nào.
             </p>
           </div>
         </div>
@@ -76,7 +86,7 @@ export const MemberQASection: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-white">{m.name}</span>
                   <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-400">
-                    16 câu
+                    {m.count} câu
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1 line-clamp-1">{m.role}</p>
@@ -98,7 +108,7 @@ export const MemberQASection: React.FC = () => {
                 : 'bg-slate-800/60 text-slate-400 hover:text-white'
             }`}
           >
-            Tất cả (16)
+            Tất cả ({currentMemberInfo.count})
           </button>
           <button
             onClick={() => setSelectedCategory('role')}

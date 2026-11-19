@@ -2847,5 +2847,762 @@ export const MEMBER_QUESTIONS: DefenseQuestion[] = [
       "28bcb01",
       "Pruning"
     ]
+  },
+{
+    "id": "MEM-BACH-17",
+    "title": "Bách - Q146: Phân bổ kiến trúc module giữa bot.py, search.py, evaluation.py và time_manager.py",
+    "question": "Với vai trò trưởng nhóm và phụ trách kiến trúc, bạn đã phân bổ trách nhiệm giữa 4 module chính như thế nào để đảm bảo tính độc lập và dễ kiểm thử?",
+    "category": "architecture",
+    "topic": "architecture",
+    "memberTarget": "bach",
+    "memberRole": "Trưởng nhóm & Kiến trúc hệ thống",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em thiết kế hệ thống theo nguyên lý Single Responsibility Principle (Đơn nhiệm): bot.py đóng vai trò điều phối giao tiếp và xử lý ngoại lệ vòng ngoài; time_manager.py chuyên trách tính toán ngân sách thời gian động; search.py chịu trách nhiệm duyệt cây Alpha-Beta và sắp xếp nước đi; còn evaluation.py là module hàm thuần túy (pure function) lượng giá tĩnh thế cờ. Nhờ phân tách rạch ròi, mỗi thành viên có thể kiểm thử độc lập module của mình mà không sợ ảnh hưởng đến các phần còn lại.",
+      "deepExplanation": "Theo Báo cáo Chương 3 và 4: 1. Nguyên tắc thiết kế kiến trúc: Tránh hiện tượng 'God Class' nơi toàn bộ logic bị nhồi vào một file duy nhất. 2. Luồng giao tiếp chuẩn hóa: - `bot.py` nhận payload JSON qua stdin, bóc tách thành đối tượng `SearchContext`, gọi `time_manager.allocate_time(context)` để lấy ngân sách `time_limit`. - Sau đó truyền `board` và `time_limit` vào `search.iterative_deepening_search(...)`. - Trong quá trình tìm kiếm, `search.py` chỉ tương tác với `evaluation.py` qua duy nhất một điểm chạm là hàm `evaluate(board)`. 3. Lợi ích kiểm thử: Em có thể viết mock test cho `search.py` với một hàm evaluate giả lập, hoặc kiểm thử `time_manager.py` với các kịch bản thời gian giả định mà không cần khởi động toàn bộ bàn cờ.",
+      "codeRef": {
+        "file": "student/bot.py",
+        "functionName": "BotGroup12",
+        "lines": "L15-60"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu cần thay đổi thuật toán lượng giá từ Heuristic sang Mạng nơ-ron (NNUE), kiến trúc hiện tại có đáp ứng được không?",
+          "answer": "Dạ hoàn toàn đáp ứng được ngay lập tức, vì search.py chỉ phụ thuộc vào chữ ký hàm evaluate(board) trả về số nguyên int; ta chỉ cần thay đổi nội dung bên trong evaluation.py mà không cần sửa một dòng code nào trong search.py hay time_manager.py."
+        },
+        {
+          "question": "Tại sao em không gộp time_manager vào trong bot.py cho gọn?",
+          "answer": "Dạ, vì logic quản lý thời gian có nhiều tham số tinh chỉnh thực nghiệm phức tạp (k_risk, panic mode, ước lượng nước đi); tách riêng giúp bạn Long tập trung phát triển và kiểm thử thuật toán thời gian mà không làm xáo trộn mã nguồn giao tiếp bot."
+        }
+      ]
+    },
+    "tags": [
+      "bach",
+      "architecture",
+      "srp",
+      "module-coupling",
+      "mock-testing"
+    ]
+  },
+  {
+    "id": "MEM-BACH-18",
+    "title": "Bách - Q147: Cơ chế xử lý ngoại lệ vòng ngoài trong bot.py để ngăn chặn crash hệ thống",
+    "question": "Nếu trong quá trình tìm kiếm hoặc lượng giá phát sinh lỗi runtime (ví dụ lỗi bộ nhớ, đệ quy quá sâu hoặc ngoại lệ thư viện), bot.py làm thế nào để đảm bảo bot không bị sập và vẫn trả về nước đi hợp lệ?",
+    "category": "code",
+    "topic": "code",
+    "memberTarget": "bach",
+    "memberRole": "Trưởng nhóm & Kiến trúc hệ thống",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, trong hàm get_move của bot.py, em thiết lập cơ chế phòng vệ 2 lớp (Two-tier Fallback Defense): Ngay khi bắt đầu lượt đi, bot luôn lưu sẵn một nước đi hợp lệ đầu tiên (Fallback Move = list(board.legal_moves)[0]). Toàn bộ quá trình tính toán tìm kiếm được bọc kín trong khối try...except Exception. Nếu có bất kỳ lỗi runtime nào phát sinh, bot sẽ bắt ngoại lệ, ghi log ra stderr và lập tức gửi nước đi dự phòng fallback về cho trọng tài, đảm bảo 100% không bị xử thua do crash tiến trình.",
+      "deepExplanation": "Theo thiết kế phòng vệ trong Báo cáo mục 4.1: 1. Môi trường thi đấu khắc nghiệt: Trong giải đấu ChessLab, một ngoại lệ không được bắt (unhandled exception) sẽ làm tiến trình Python kết thúc với mã lỗi phi 0, hệ thống trọng tài sẽ lập tức xử thua ngay mà không cần đợi hết giờ. 2. Cơ chế 2 tầng: - Tầng 1 (Default Fallback): `fallback_move = next(iter(board.legal_moves))` được lấy ra ngay trong 0.0001 giây đầu tiên. - Tầng 2 (Iterative Deepening Cache): Mỗi khi Iterative Deepening hoàn thành một độ sâu `d`, biến `best_move` của bot được cập nhật ngay. Nếu độ sâu `d+1` bị crash hoặc timeout, bot sử dụng kết quả tốt nhất của độ sâu `d`. - Tầng 3 (Universal Catch-all): Nếu ngay từ độ sâu 1 đã sập, bot gửi `fallback_move`. 3. Ghi log chuẩn: Mọi thông tin ngoại lệ và traceback được in ra `sys.stderr` để phục vụ hậu kiểm mà tuyệt đối không in vào `sys.stdout` làm hỏng luồng giao tiếp JSON.",
+      "codeRef": {
+        "file": "student/bot.py",
+        "functionName": "get_move",
+        "lines": "L35-75"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao không để bot crash để lập trình viên dễ nhìn thấy lỗi mà lại trả về fallback move?",
+          "answer": "Dạ, trong môi trường thi đấu tính điểm thực tế, gửi một nước đi dự phòng vẫn có cơ hội thủ hòa hoặc đối thủ mắc sai lầm, còn nếu để crash thì chắc chắn nhận 0 điểm ngay lập tức."
+        },
+        {
+          "question": "Làm sao để biết bot đã từng phải dùng tới fallback move trong suốt giải đấu?",
+          "answer": "Dạ, em kiểm tra log stderr sau giải đấu; kết quả ghi nhận bot không phải dùng fallback move do crash lần nào, chứng minh tính ổn định tuyệt đối của thuật toán."
+        }
+      ]
+    },
+    "tags": [
+      "bach",
+      "exception-safety",
+      "fallback-move",
+      "robustness",
+      "two-tier-defense"
+    ]
+  },
+  {
+    "id": "MEM-BACH-19",
+    "title": "Bách - Q148: Lý do lựa chọn Iterative Deepening làm khung điều phối tìm kiếm chính",
+    "question": "Tại sao bạn quyết định sử dụng Iterative Deepening làm khung điều phối tìm kiếm chính trong bot.py thay vì gọi thẳng hàm Alpha-Beta với một độ sâu cố định?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "bach",
+    "memberRole": "Trưởng nhóm & Kiến trúc hệ thống",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em chọn Iterative Deepening vì 2 lý do sống còn trong thi đấu cờ chớp: (1) Tính chất giải thuật thời gian thực (Anytime Algorithm): Bot luôn có sẵn một nước đi tốt nhất hoàn chỉnh từ độ sâu trước đó để trả về bất cứ khi nào hết thời gian, loại bỏ hoàn toàn nguy cơ quá giờ; (2) Tối ưu hóa cắt tỉa: Kết quả nước đi tốt nhất và điểm số ở độ sâu d được nạp vào Transposition Table, trở thành hạt giống Move Ordering cho độ sâu d+1, giúp Alpha-Beta ở độ sâu lớn chạy nhanh hơn gấp nhiều lần.",
+      "deepExplanation": "Theo Báo cáo mục 2.2 và 4.2: 1. Rủi ro của độ sâu cố định (Fixed-depth Search): Trong cờ vua, không thể biết trước một độ sâu cụ thể (ví dụ depth=5) sẽ mất 0.2 giây hay 10 giây để duyệt, vì hệ số phân nhánh phụ thuộc vào thế cờ. Nếu đặt cố định depth=5, ở những thế cờ phức tạp bot sẽ bị quá giờ (timeout) và bị xử thua. Nếu đặt quá thấp (depth=3) thì bot sẽ lãng phí thời gian ở những thế cờ đơn giản. 2. Bản chất Anytime Algorithm: Iterative Deepening duyệt tuần tự depth = 1, 2, 3, 4... Sau mỗi độ sâu hoàn tất, ta ghi nhận `best_move = current_depth_best`. Khi đồng hồ chạm ngưỡng dừng (`elapsed >= time_limit`), bot lập tức ngắt vòng lặp và trả về kết quả gần nhất. 3. Nghịch lý hiệu năng: Duyệt lặp dường như tốn thêm chi phí duyệt lại các độ sâu 1..d-1, nhưng trong cây phân nhánh mũ b ≈ 3-4, tổng số nút của các độ sâu trước chỉ chiếm khoảng 25-30% của độ sâu cuối cùng. Chi phí nhỏ này được bù đắp vượt trội nhờ việc bảng TT đã được lấp đầy, giúp Alpha-Beta ở độ sâu cuối tìm ra nước đi tốt nhất ngay từ nhánh đầu tiên.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "iterative_deepening_search",
+        "lines": "L65-115"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tổng số nút duyệt lại từ độ sâu 1 đến d-1 chiếm bao nhiêu phần trăm so với độ sâu d?",
+          "answer": "Dạ, theo công thức cấp số nhân với hệ số rẽ nhánh b >= 3, tổng số nút từ 1 đến d-1 xấp xỉ 1 / (b - 1) <= 1/2 = 33% số nút ở độ sâu d; đây là overhead hoàn toàn chấp nhận được."
+        },
+        {
+          "question": "Nếu thời gian còn lại rất ít, Iterative Deepening có bắt đầu độ sâu mới không?",
+          "answer": "Dạ không, trước khi bước vào độ sâu d+1, bot kiểm tra nếu thời gian đã trôi qua vượt quá 50% ngân sách cho phép thì sẽ dừng ngay vì xác suất hoàn thành độ sâu mới là rất thấp."
+        }
+      ]
+    },
+    "tags": [
+      "bach",
+      "iterative-deepening",
+      "anytime-algorithm",
+      "move-ordering-seed",
+      "time-safety"
+    ]
+  },
+  {
+    "id": "MEM-BACH-20",
+    "title": "Bách - Q149: Xử lý thông điệp JSON bất thường qua stdin và an toàn giao tiếp",
+    "question": "Nếu nền tảng thi đấu ChessLab gửi một chuỗi JSON không đúng định dạng hoặc thiếu các trường dữ liệu qua stdin, bot.py sẽ xử lý như thế nào?",
+    "category": "architecture",
+    "topic": "architecture",
+    "memberTarget": "bach",
+    "memberRole": "Trưởng nhóm & Kiến trúc hệ thống",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, trong module bot.py, em sử dụng phương thức bóc tách dữ liệu an toàn với json.loads bọc trong khối try...except json.JSONDecodeError, kết hợp với phương thức dict.get() có giá trị mặc định cho từng trường (ví dụ: data.get('time_left', 60.0)). Nếu toàn bộ chuỗi JSON bị hỏng, bot sẽ bắt lỗi, khôi phục trạng thái gần nhất hoặc trả về phản hồi lỗi an toàn thay vì để tiến trình crash.",
+      "deepExplanation": "1. Giao thức giao tiếp chuẩn ChessLab: Hệ thống gửi thông điệp qua luồng stdin dưới dạng một dòng JSON duy nhất chứa `fen`, `time_left`, `time_opponent`, `increment`... 2. Kỹ thuật phòng thủ dữ liệu đầu vào: - `json.loads(line)`: Được bảo vệ để không văng ngoại lệ cú pháp. - Khởi tạo `SearchContext`: Thay vì truy cập trực tiếp `data['time_left']` (dễ gây KeyError), em dùng `data.get('time_left', DEFAULT_TIME)`. - Kiểm tra tính hợp lệ của FEN: Sử dụng `chess.Board(fen)` để kiểm tra; nếu FEN không hợp lệ, bot sẽ khởi tạo bàn cờ mặc định. 3. Đảm bảo tính sạch sẽ của stdout: Chỉ in duy nhất chuỗi JSON phản hồi chứa `move`. Mọi thông tin debug hoặc thông báo lỗi cú pháp đều được định tuyến về `sys.stderr`.",
+      "codeRef": {
+        "file": "student/bot.py",
+        "functionName": "main / handle_message",
+        "lines": "L80-120"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao việc gọi print() thông thường trong Python có thể làm hỏng giao tiếp của bot?",
+          "answer": "Dạ, vì print() mặc định xuất ra stdout; nếu in một câu chữ tự do, trọng tài ChessLab khi đọc stdout sẽ parse JSON thất bại và phạt xử thua bot ngay lập tức."
+        },
+        {
+          "question": "Làm thế nào để bảo đảm Python không đệm dòng (buffer) khi in ra stdout?",
+          "answer": "Dạ, em dùng print(..., flush=True) hoặc gọi sys.stdout.flush() ngay sau khi xuất phản hồi để dữ liệu được đẩy tức thì qua pipe đến trọng tài."
+        }
+      ]
+    },
+    "tags": [
+      "bach",
+      "json-parsing",
+      "dict-get",
+      "stdin-stdout",
+      "flush-pipe"
+    ]
+  },
+  {
+    "id": "MEM-BACH-21",
+    "title": "Bách - Q150: Quy trình quản lý đóng góp thành viên và phê duyệt mã nguồn (Code Review)",
+    "question": "Với vai trò trưởng nhóm, bạn đã tổ chức quy trình làm việc trên Git, phân công nhiệm vụ và phê duyệt các đóng góp (Pull Request) của các thành viên như thế nào?",
+    "category": "architecture",
+    "topic": "architecture",
+    "memberTarget": "bach",
+    "memberRole": "Trưởng nhóm & Kiến trúc hệ thống",
+    "difficulty": "basic",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em phân chia ranh giới sở hữu module rất rõ ràng theo thế mạnh của từng bạn: Long phụ trách time_manager.py và log thực nghiệm; Việt phụ trách evaluation.py và tri thức Chess960; Vương phụ trách search.py và thuật toán tối ưu; còn em quản lý bot.py, tích hợp hệ thống và kiểm thử. Nhóm sử dụng mô hình Git Feature Branch: mọi thành viên tạo nhánh riêng, chạy qua bộ test tự động đạt yêu cầu mới được tạo PR và em là người review cuối cùng trước khi merge vào main.",
+      "deepExplanation": "Theo Báo cáo Chương 6 về tổ chức và phân công: 1. Ranh giới module để tránh xung đột mã nguồn (Merge Conflicts): Nhờ 4 module nằm ở 4 file tách biệt, các thành viên có thể commit độc lập hàng ngày mà hầu như không bao giờ bị xung đột code. 2. Tiêu chí phê duyệt (Definition of Done) cho một PR: - Mã nguồn phải tuân thủ quy chuẩn PEP 8. - Không được làm thay đổi chữ ký các hàm công khai đã thỏa thuận. - Phải vượt qua bài test tính đúng đắn và không làm giảm tốc độ duyệt NPS của hệ thống. 3. Họp định kỳ và đối soát: Nhóm tổ chức trao đổi sau mỗi đợt thi đấu thử nghiệm để cùng nhau mổ xẻ file log ván đấu, xác định nguyên nhân thắng thua và lên danh sách các đầu việc cải tiến tiếp theo.",
+      "codeRef": {
+        "file": "team.json",
+        "functionName": "team_members",
+        "lines": "L1-30"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Khi hai thành viên có quan điểm trái ngược nhau về một tham số (ví dụ tăng hay giảm an toàn Vua), em giải quyết thế nào?",
+          "answer": "Dạ, em giải quyết hoàn toàn bằng số liệu thực nghiệm: cho hai phiên bản mang hai bộ tham số đó đấu đối đầu trực tiếp 20 ván trên cùng một máy; phiên bản nào có tỷ lệ thắng cao hơn sẽ được chọn."
+        },
+        {
+          "question": "Em đánh giá thành viên nào có đóng góp mang tính kỹ thuật thử thách nhất trong nhóm?",
+          "answer": "Dạ, em đánh giá module search.py của bạn Vương và time_manager.py của bạn Long đều rất thử thách: Vương phải giải quyết bài toán đệ quy cắt tỉa phức tạp, còn Long phải chịu áp lực bảo đảm 0% lỗi quá giờ."
+        }
+      ]
+    },
+    "tags": [
+      "bach",
+      "team-management",
+      "git-workflow",
+      "code-review",
+      "conflict-resolution"
+    ]
+  },
+  {
+    "id": "MEM-LONG-17",
+    "title": "Long - Q151: Thiết kế hàm allocate_time đối phó với độ trễ jitter và chế độ khẩn cấp",
+    "question": "Bạn đã thiết kế thuật toán phân bổ thời gian trong time_manager.py như thế nào để đối phó với hiện tượng trễ mạng/hệ điều hành (jitter) và khi nào bot kích hoạt chế độ khẩn cấp (Panic Mode)?",
+    "category": "time-management",
+    "topic": "time-management",
+    "memberTarget": "long",
+    "memberRole": "Quản lý thời gian & Thực nghiệm",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em thiết kế thuật toán 3 lớp bảo vệ: (1) Trừ trước biên độ an toàn cố định SAFETY_MARGIN = 0.15s cho độ trễ truyền thông I/O; (2) Phân bổ ngân sách cơ sở theo số nước đi dự kiến còn lại T_base = remaining / moves_left; (3) Kích hoạt chế độ khẩn cấp Panic Mode khi thời gian còn lại dưới 5.0 giây: lúc này bot chuyển sang trần ngân sách cố định 0.2 - 0.4 giây/nước và giới hạn độ sâu tối đa 2 ply để đi ngay lập tức, triệt tiêu hoàn toàn nguy cơ quá giờ.",
+      "deepExplanation": "Theo Báo cáo mục 4.1 và student/time_manager.py: 1. Đo lường hiện tượng Jitter thực tế: Trong hệ thống chấm thi đấu, độ trễ từ khi bot in ra stdout đến khi trọng tài ghi nhận có thể dao động từ 10ms đến 150ms tùy vào tải CPU của máy chủ. Nếu bot dùng hết 100% ngân sách mà không có khoảng đệm, jitter sẽ làm bot thua timeout. 2. Công thức phân bổ chi tiết: - Ngân sách khả dụng thực tế: `usable_time = max(0.0, time_left - SAFETY_MARGIN)`. - Ước lượng số nước còn lại: `moves_left = max(15, 50 - ply//2)`. - Ngân sách cơ sở: `allocated = usable_time / moves_left + increment * 0.8`. 3. Chế độ khẩn cấp (Panic Mode): Khi `time_left < 5.0s`, nếu tiếp tục tính toán bình thường bot có thể gặp sự cố dọn rác (GC pause) của Python gây sập. Em áp dụng: `if time_left < 3.0: return min(0.3, usable_time * 0.1)`. Cơ chế này đã bảo vệ bot an toàn tuyệt đối trong các ván cờ marathon kéo dài trên 80 nước.",
+      "codeRef": {
+        "file": "student/time_manager.py",
+        "functionName": "allocate_time",
+        "lines": "L30-75"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao hệ số cộng thêm thời gian increment chỉ nhân 0.8 mà không dùng hết 100%?",
+          "answer": "Dạ, vì 20% còn lại của increment được giữ lại để tích lũy dần vào quỹ thời gian dự phòng, giúp đồng hồ của bot tăng dần trở lại ở tàn cuộc."
+        },
+        {
+          "question": "Nếu thời gian còn lại của bot chỉ còn 0.5 giây thì hàm trả về bao nhiêu?",
+          "answer": "Dạ, khi đó hàm trả về giá trị tối thiểu MIN_TIME = 0.05 giây để bot trả về nước đi đầu tiên hợp lệ trong chớp mắt mà không bị trừ hết giờ."
+        }
+      ]
+    },
+    "tags": [
+      "long",
+      "time-management",
+      "jitter-defense",
+      "panic-mode",
+      "safety-margin"
+    ]
+  },
+  {
+    "id": "MEM-LONG-18",
+    "title": "Long - Q152: Nguồn gốc và lý do lựa chọn hệ số rủi ro k_risk = 0.005",
+    "question": "Trong mã nguồn time_manager.py, hệ số rủi ro k_risk = 0.005 có ý nghĩa toán học gì và bạn đã dựa trên cơ sở thực nghiệm nào để xác định giá trị này?",
+    "category": "time-management",
+    "topic": "time-management",
+    "memberTarget": "long",
+    "memberRole": "Quản lý thời gian & Thực nghiệm",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, hệ số k_risk = 0.005 là tham số điều chỉnh độ dốc của hàm phạt rủi ro thời gian. Nó được dùng để tính toán biên độ an toàn động: khi thời gian còn dồi dào, biên độ an toàn nhỏ để tận dụng tối đa thời gian suy nghĩ; khi thời gian giảm dần, biên độ an toàn tự động phình to theo hàm phi tuyến để ép bot phải ra quyết định nhanh hơn. Con số 0.005 được em tìm ra sau loạt 40 ván đấu thử nghiệm mô phỏng độ trễ ngẫu nhiên.",
+      "deepExplanation": "Theo Báo cáo mục 4.5 và thông số PARAM-03: 1. Ý nghĩa mô hình toán: Công thức biên độ an toàn động có dạng: `Dynamic_Margin = Base_Margin + k_risk * (Initial_Time - Current_Time)^1.5`. Khi mới vào trận (`Current_Time` xấp xỉ `Initial_Time`), số hạng phạt bằng 0. Khi trận đấu trôi về cuối, khoảng đệm an toàn tự động tăng lên để chống lại sự mệt mỏi của tiến trình (bộ nhớ đầy, garbage collector hoạt động nhiều hơn). 2. Quá trình thực nghiệm đối chứng: - Thử nghiệm với `k_risk = 0.02`: Bot quá nhút nhát, ở nước thứ 20 đã co cụm suy nghĩ dưới 0.5s, làm độ sâu tụt giảm nghiêm trọng và thua cờ chiến thuật. - Thử nghiệm với `k_risk = 0.001`: Bot quá mạo hiểm, dẫn tới 2 ván bị thua timeout ở nước 65 do độ trễ mạng tăng đột biến. - Kết quả với `k_risk = 0.005`: Đạt điểm cân bằng tối ưu hoàn hảo, 0% lỗi timeout và độ sâu trung bình duy trì mức 4.2 ply.",
+      "codeRef": {
+        "file": "student/time_manager.py",
+        "functionName": "allocate_time",
+        "lines": "L40-70"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu thời gian ban đầu của ván đấu là 300 giây thay vì 60 giây thì k_risk có cần đổi không?",
+          "answer": "Dạ có, khi thời gian lớn hơn thì k_risk cần giảm xuống tỷ lệ nghịch để tránh việc biên độ an toàn tăng quá nhanh ở giai đoạn đầu."
+        },
+        {
+          "question": "k_risk tác động như thế nào đến tâm lý thi đấu của bot?",
+          "answer": "Dạ, k_risk đóng vai trò như một 'chiếc phanh hãm' giúp bot chuyển trạng thái mượt mà từ phong cách suy nghĩ sâu ở trung cuộc sang phong cách đi nhanh dứt khoát ở tàn cuộc."
+        }
+      ]
+    },
+    "tags": [
+      "long",
+      "k-risk",
+      "time-tuning",
+      "empirical-optimization",
+      "dynamic-margin"
+    ]
+  },
+  {
+    "id": "MEM-LONG-19",
+    "title": "Long - Q153: Xử lý ngân sách thời gian khi ván cờ kéo dài vượt quá dự kiến (Marathon Games)",
+    "question": "Nếu một ván cờ kéo dài tới nước 90 hay 120 (vượt xa con số 40-50 nước thông thường), thuật toán time_manager của bạn làm thế nào để không bị chia cho 0 và không bị cạn sạch thời gian?",
+    "category": "time-management",
+    "topic": "time-management",
+    "memberTarget": "long",
+    "memberRole": "Quản lý thời gian & Thực nghiệm",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em sử dụng kỹ thuật 'Cửa sổ trượt dự phóng nước đi' (Sliding Move Window) với hàm max bảo vệ: moves_left = max(MIN_LOOKAHEAD_MOVES, ESTIMATED_TOTAL - ply//2). Bằng cách cố định MIN_LOOKAHEAD_MOVES = 12 đến 15 nước, mẫu số không bao giờ chạm tới 0 và bot luôn luôn coi rằng ván đấu còn ít nhất 15 nước nữa để phân bổ đều số giây còn lại.",
+      "deepExplanation": "Theo phân tích ván đấu POS-08 và POS-09 trong Báo cáo: 1. Vấn đề của mô hình tĩnh: Nếu dùng công thức ngây thơ `moves_left = 40 - move_number`, khi ván cờ bước sang nước 41, mẫu số bị âm hoặc bằng 0 gây lỗi `ZeroDivisionError`, hoặc nếu xử lý bằng cách lấy hết thời gian thì bot sẽ chết đứng ở nước 42. 2. Cơ chế cửa sổ trượt của em: - Khi `move_number < 30`: Ước tính ván cờ kéo dài khoảng 50 nước, `moves_left` giảm dần từ 50 xuống 20. - Khi `move_number >= 35`: `moves_left` chạm ngưỡng sàn `MIN_LOOKAHEAD_MOVES = 15` và giữ nguyên là 15 cho dù ván cờ kéo dài đến nước 80 hay nước 120. 3. Kết hợp với bước nhảy thời gian cộng thêm (Increment): Ở mỗi nước đi, bot nhận thêm ví dụ +1 giây increment; phân bổ `usable_time / 15 + 0.8` đảm bảo bot luôn có khoảng 0.8 - 1.2 giây cho mỗi nước đi vô tận mà không bao giờ cạn kiệt đồng hồ.",
+      "codeRef": {
+        "file": "student/time_manager.py",
+        "functionName": "allocate_time",
+        "lines": "L35-65"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu ván đấu hoàn toàn không có thời gian cộng thêm (no increment) thì cửa sổ trượt có cứu được bot không?",
+          "answer": "Dạ có, nếu không có increment, quỹ thời gian sẽ giảm tiệm cận về 0 theo cấp số nhân (mỗi nước dùng 1/15 số thời gian còn lại: 10s -> 9.3s -> 8.7s...), bot vẫn đi được thêm 30-40 nước nữa ở chế độ cực nhanh."
+        },
+        {
+          "question": "Kỷ lục ván đấu dài nhất của nhóm ở giải đấu là bao nhiêu nước?",
+          "answer": "Dạ là ván POS-09 kéo dài 123 nước, bot vận hành cơ chế cửa sổ trượt hoàn hảo và kết thúc bằng chiến thắng chiếu hết."
+        }
+      ]
+    },
+    "tags": [
+      "long",
+      "marathon-games",
+      "sliding-window",
+      "zero-division-prevention",
+      "endgame-resilience"
+    ]
+  },
+  {
+    "id": "MEM-LONG-20",
+    "title": "Long - Q154: Khác biệt trong phân bổ thời gian giữa khai cuộc Chess960, trung cuộc và tàn cuộc",
+    "question": "Chiến lược phân bổ thời gian của bạn có sự khác biệt như thế nào giữa giai đoạn khai cuộc Chess960, giai đoạn trung cuộc nhiều biến động và giai đoạn tàn cuộc ít quân?",
+    "category": "time-management",
+    "topic": "time-management",
+    "memberTarget": "long",
+    "memberRole": "Quản lý thời gian & Thực nghiệm",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, chiến lược của em là phân bổ hình chuông lệch (Skewed Bell Curve): (1) Khai cuộc Chess960: Dùng thời gian vừa phải (1.5 - 2.0s) để định vị quân và kiểm soát trung tâm vì không có sách khai cuộc; (2) Trung cuộc (nước 15 - 35): Dồn ngân sách tối đa (2.5 - 4.0s) vì đây là giai đoạn bùng nổ chiến thuật quyết định ván đấu; (3) Tàn cuộc: Rút ngắn thời gian (0.8 - 1.5s) vì số lượng quân ít, bảng TT phát huy hiệu quả cao và cần giữ thời gian cho các nước dứt điểm.",
+      "deepExplanation": "Theo Báo cáo mục 4.1 và đồ thị phân bổ thời gian: 1. Đặc thù Chess960 ở Khai cuộc: Trong cờ truyền thống, bot có thể dùng Opening Book để đi ngay trong 0.001s. Nhưng trong Chess960, thế trận hoàn toàn mới lạ; tuy nhiên ở 5 nước đầu tiên, cây tìm kiếm chưa bị đe dọa chiến thuật chết người nên không cần dồn quá nhiều thời gian, duy trì mức 1.5s là tối ưu. 2. Trọng tâm Trung cuộc: Giai đoạn các quân nặng và nhẹ bắt đầu va chạm. Một sai lầm ở trung cuộc sẽ dẫn tới mất quân không thể cứu vãn. Do đó, hàm thời gian cấp phát hệ số trọng số `Phase_Weight = 1.3` cho giai đoạn này để bot có thể tìm kiếm sâu thêm 1 ply. 3. Đơn giản hóa ở Tàn cuộc: Khi chỉ còn vài quân trên bàn cờ, hệ số rẽ nhánh giảm từ 35 xuống chỉ còn 10-15 nước đi hợp lệ. Tốc độ duyệt của thuật toán tự động tăng lên, do đó chỉ cần 1 giây là bot đã đạt được độ sâu 5-6 ply.",
+      "codeRef": {
+        "file": "student/time_manager.py",
+        "functionName": "allocate_time",
+        "lines": "L25-60"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Làm thế nào để hàm allocate_time nhận biết ván cờ đang ở giai đoạn nào?",
+          "answer": "Dạ, em dựa vào hai chỉ số: số lượt đi đã qua (ply) và tổng số quân cờ còn lại trên bàn cờ được truyền trong đối tượng SearchContext."
+        },
+        {
+          "question": "Nếu ở trung cuộc phát hiện đối phương có nước đi duy nhất thì thời gian có giảm không?",
+          "answer": "Dạ, nếu đối phương chỉ có 1 nước đi thì thế cờ rất dễ đoán, nhưng bot vẫn cần tính kỹ phản ứng của mình ở nước tiếp theo nên vẫn giữ thời gian hợp lý."
+        }
+      ]
+    },
+    "tags": [
+      "long",
+      "game-phases",
+      "chess960-opening",
+      "middlegame-peak",
+      "endgame-reduction"
+    ]
+  },
+  {
+    "id": "MEM-LONG-21",
+    "title": "Long - Q155: Quan điểm về việc điều chỉnh thời gian suy nghĩ dựa trên đồng hồ của đối thủ",
+    "question": "Trong SearchContext có chứa thông tin time_opponent. Tại sao nhóm chưa sử dụng thông số này để thay đổi thời gian suy nghĩ của bot, và nếu áp dụng thì bạn sẽ thiết kế chiến lược gì?",
+    "category": "time-management",
+    "topic": "time-management",
+    "memberTarget": "long",
+    "memberRole": "Quản lý thời gian & Thực nghiệm",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, nhóm chưa can thiệp vì ưu tiên hàng đầu của giải này là 'sự ổn định nội tại' - tập trung tối ưu chất lượng nước đi của chính mình trước khi tính đến tâm lý đối thủ. Nếu áp dụng trong tương lai, em sẽ thiết kế chiến lược 'Tăng tốc gây áp lực' (Pace Acceleration): Khi time_opponent < 10 giây trong khi bot còn nhiều thời gian, bot sẽ chủ động giảm thời gian suy nghĩ xuống còn 0.5s ở các nước đi cân bằng để buộc đối thủ phải liên tục phản xạ trong áp lực cạn giờ.",
+      "deepExplanation": "Theo thảo luận định hướng trong Báo cáo Chương 6: 1. Rủi ro khi phụ thuộc vào đồng hồ đối thủ: Nếu thuật toán thấy đối thủ còn ít thời gian mà tự ý đi ẩu (đi quá nhanh để ép giờ) trong một thế cờ phức tạp, bot có thể mắc sai lầm chiến thuật tự sát và biến ván thắng thành ván thua. Vì vậy, nguyên tắc an toàn số 1 là: Nước đi phải đảm bảo độ sâu tối thiểu rồi mới được tính đến yếu tố thời gian đối thủ. 2. Kịch bản ứng dụng khả thi (Time-pressure Exploitation): - Điều kiện kích hoạt: `time_opponent < 8.0` và `time_left > 25.0` và thế cờ đang có ưu thế (`eval >= 0`). - Hành vi: Bot ưu tiên chọn các nước đi tạo nhiều lời đe dọa (Threats) và giảm ngân sách của mình xuống còn 0.8s để gửi đòn đánh liên hồi, khiến đối thủ không kịp xử lý pipe I/O và sụp đổ vì timeout. 3. Kết luận: Đây là một tính năng nâng cao rất hấp dẫn cho phiên bản tiếp theo.",
+      "codeRef": {
+        "file": "student/time_manager.py",
+        "functionName": "allocate_time",
+        "lines": "L20-55"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Có khi nào đối thủ cố tình câu giờ để bot của mình bị ảnh hưởng không?",
+          "answer": "Dạ không, vì đồng hồ của mỗi bên chạy độc lập; khi đối thủ đang suy nghĩ thì đồng hồ của đối thủ bị trừ còn đồng hồ của nhóm đứng yên."
+        },
+        {
+          "question": "Trong giải đấu, ván thắng nào của nhóm in đậm dấu ấn chênh lệch đồng hồ nhất?",
+          "answer": "Dạ là ván POS-07, đối thủ cạn kiệt thời gian và thua timeout ở nước 42 trong khi bot của nhóm vẫn còn tới 28 giây thảnh thơi."
+        }
+      ]
+    },
+    "tags": [
+      "long",
+      "opponent-clock",
+      "time-pressure-strategy",
+      "future-design",
+      "risk-control"
+    ]
+  },
+  {
+    "id": "MEM-VIET-17",
+    "title": "Việt - Q156: Cấu trúc phân tầng điểm số trong hàm evaluate() và lý do thiết kế",
+    "question": "Bạn đã cấu trúc các thành phần điểm số trong hàm evaluate() như thế nào và tại sao lại lựa chọn thứ tự ưu tiên: Vật chất -> Vị trí PST -> An toàn Vua -> Cặp Tượng/Tốt thông?",
+    "category": "evaluation",
+    "topic": "evaluation",
+    "memberTarget": "viet",
+    "memberRole": "Lượng giá & Tri thức cờ Chess960",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em thiết kế hàm evaluate theo mô hình cộng dồn phân tầng (Layered Additive Model): Vật chất là nền tảng cốt lõi chiếm trọng số áp đảo (>80%); Bảng PST định hướng vị trí và phát triển quân chiếm ~10%; An toàn Vua đóng vai trò bảo vệ sống còn (~5%); Cặp Tượng và Tốt thông mang tính tinh chỉnh cục diện (~5%). Cấu trúc phân tầng này đảm bảo bot không bao giờ vì một ưu thế vị trí trừu tượng mà đánh đổi mất trắng quân cờ của mình.",
+      "deepExplanation": "Theo Báo cáo mục 4.4 và student/evaluation.py: 1. Công thức tổng quát: `Score = Material_Score + PST_Score + King_Safety_Score + Minor_Tactical_Bonuses`. 2. Lý giải tính ưu tiên: - Vật chất (Material): Là yếu tố quyết định nhất trong cờ vua. Mất một quân Xe (-500 cp) không thể bù đắp bằng việc đứng ở ô đẹp (+30 cp). Do đó, điểm vật chất phải là trục xương sống tuyệt đối. - Vị trí (PST - Piece-Square Tables): Giúp các quân cờ di chuyển có mục đích, hướng về trung tâm và kiểm soát không gian ngay cả khi chưa có cơ hội bắt quân. - An toàn Vua (King Safety): Vua bị hở sườn có thể dẫn tới bị chiếu hết tức khắc. Trừ điểm các ô mở quanh Vua giúp bot ý thức được việc nhập thành và giữ khiên Tốt bảo vệ Vua. - Điểm thưởng cặp Tượng (+30 cp) và Tốt thông (+20 cp): Giúp bot đánh giá sắc bén hơn ở tàn cuộc mở nơi hai Tượng khống chế bàn cờ hoặc Tốt thông sắp hóa Hậu. 3. Tối ưu mã nguồn: Toàn bộ phép tính được thực hiện bằng số nguyên và phép cộng/trừ cơ bản để duy trì tốc độ hàm evaluate cực cao (~40,000 evaluations/giây).",
+      "codeRef": {
+        "file": "student/evaluation.py",
+        "functionName": "evaluate",
+        "lines": "L15-65"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao em không thêm các đánh giá phức tạp như Tốt chồng, Tốt cô lập hay quyền kiểm soát cột mở?",
+          "answer": "Dạ, vì việc duyệt các cấu trúc Tốt phức tạp bằng Python thuần làm tăng thời gian thực thi hàm evaluate lên gấp 3 lần, khiến tốc độ duyệt tụt giảm nghiêm trọng và bot không nhìn sâu được bằng đối thủ."
+        },
+        {
+          "question": "Điểm của hàm evaluate trả về là từ góc nhìn của ai?",
+          "answer": "Dạ, luôn trả về từ góc nhìn của bên đang đến lượt đi (Relative Score: dương là có lợi cho bên đi, âm là bất lợi), tương thích hoàn hảo với thuật toán Negamax."
+        }
+      ]
+    },
+    "tags": [
+      "viet",
+      "evaluation-architecture",
+      "material-first",
+      "pst-layer",
+      "relative-score"
+    ]
+  },
+  {
+    "id": "MEM-VIET-18",
+    "title": "Việt - Q157: Lý do phải trung hòa bảng Piece-Square Table (PST) trong Chess960",
+    "question": "Tại sao bảng Piece-Square Table chuẩn của cờ vua truyền thống không thể áp dụng nguyên bản cho Chess960 mà bắt buộc bạn phải tiến hành trung hòa (flatten/neutralize)?",
+    "category": "evaluation",
+    "topic": "chess960",
+    "memberTarget": "viet",
+    "memberRole": "Lượng giá & Tri thức cờ Chess960",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, vì bảng PST truyền thống được 'may đo' riêng cho thế xuất phát cố định SP-518 (Mã ở b1/g1, Tượng ở c1/f1, Vua ở e1). Trong Chess960, các quân xuất phát ở vị trí hoàn toàn ngẫu nhiên (ví dụ Vua ở b1, Xe ở e1, Tượng ở a1). Nếu giữ nguyên PST chuẩn, bot sẽ phạt điểm nặng nề một quân cờ chỉ vì nó sinh ra ở vị trí đó (ví dụ phạt Tượng ở góc a1), khiến bot vội vàng đi những nước vô nghĩa chỉ để đưa quân vào các ô mà PST cờ chuẩn coi là đẹp.",
+      "deepExplanation": "Theo Báo cáo mục 4.4 về thích ứng Chess960: 1. Sai lệch của PST truyền thống: Trong cờ truyền thống, ô g1 hay c1 là nơi Vua nhập thành an toàn nên được cộng điểm cao. Nhưng trong Chess960, Vua có thể đã đứng ở b1 ngay từ nước đầu. Nếu PST ép Vua phải đi về g1, bot sẽ phí mất vài nước đi di chuyển Vua đi lang thang giữa bàn cờ và bị đối thủ tấn công. 2. Giải pháp trung hòa của em: - Làm phẳng các giá trị ở hàng 1 và hàng 8 (Back-rank Neutralization): Giảm biên độ chênh lệch điểm số giữa các ô ở hàng đáy, chỉ giữ lại xu hướng khuyến khích phát triển quân lên phía trước (hàng 2, 3, 4). - Giữ nguyên trọng số trung tâm: Các ô trung tâm (d4, d5, e4, e5) vẫn giữ nguyên giá trị thưởng cao cho Mã và Tốt, vì trong mọi biến thể Chess960, kiểm soát trung tâm luôn là chân lý chiến lược bất biến. 3. Kết quả: Bot nhập cuộc tự nhiên, không bị 'ngáo cờ' ở những nước khai cuộc đầu tiên.",
+      "codeRef": {
+        "file": "student/evaluation.py",
+        "functionName": "PST_TABLES",
+        "lines": "L30-80"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Quân nào trong Chess960 chịu ảnh hưởng xấu nhất nếu không trung hòa PST?",
+          "answer": "Dạ là quân Tượng và quân Hậu; Tượng nằm ở góc bàn cờ nếu bị trừ điểm quá nặng sẽ khiến bot vội vã đẩy Tốt mở đường mà không quan tâm đến an toàn phòng thủ."
+        },
+        {
+          "question": "Em kiểm tra bảng PST trung hòa này như thế nào?",
+          "answer": "Dạ, em cho bot chạy thử nghiệm trên 20 thế cờ Chess960 kỳ dị nhất (Vua ở mép, Hậu ở góc) và xác nhận bot không đi các nước Vua lang thang ở 5 nước đầu tiên."
+        }
+      ]
+    },
+    "tags": [
+      "viet",
+      "pst-neutralization",
+      "chess960-adaptation",
+      "back-rank-flattening",
+      "center-control"
+    ]
+  },
+  {
+    "id": "MEM-VIET-19",
+    "title": "Việt - Q158: Thuật toán đánh giá an toàn Vua và nguồn gốc con số phạt 15 centipawns",
+    "question": "Thuật toán King Safety của bạn hoạt động như thế nào và tại sao bạn lại chọn mức phạt 15 centipawns cho mỗi ô mở quanh Vua thay vì một con số lớn hơn?",
+    "category": "evaluation",
+    "topic": "evaluation",
+    "memberTarget": "viet",
+    "memberRole": "Lượng giá & Tri thức cờ Chess960",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, thuật toán King Safety của em kiểm tra 'tấm khiên Tốt' (Pawn Shield) trên 8 ô lân cận xung quanh ô đứng của Vua. Cứ mỗi cột liền kề phía trước Vua mà không có quân Tốt che chắn (cột mở hoặc nửa mở), bot sẽ phạt 15 cp. Con số 15 cp (tương đương 0.15 Tốt) được em chọn vì nó đủ lớn để thôi thúc bot nhập thành và giữ Tốt che Vua, nhưng không quá lớn để làm tê liệt bot, giúp bot vẫn dám dâng Tốt tấn công khi có cơ hội.",
+      "deepExplanation": "Theo Báo cáo mục 4.4 và mã nguồn evaluation.py: 1. Cơ chế kiểm tra an toàn Vua: - Xác định vị trí `king_square = board.king(color)`. - Quét 3 ô ở hàng phía trước Vua (ví dụ Vua Trắng ở g1 thì kiểm tra f2, g2, h2). - Nếu ô đó bị trống (Tốt đã đẩy đi hoặc bị bắt), tăng biến đếm `open_files += 1`. - `Penalty = open_files * 15`. 2. Căn cứ thực nghiệm cho con số 15 cp: - Nếu phạt 30-50 cp (quá nặng): Bot mắc hội chứng 'hoang tưởng sợ hãi', không bao giờ dám đẩy bất kỳ quân Tốt nào ở cánh Vua để mở đường phản công, dẫn tới thế cờ bị đối phương bóp nghẹt. - Nếu phạt dưới 5 cp (quá nhẹ): Bot hoàn toàn bàng quan trước việc Vua bị lột sạch giáp Tốt, dễ dàng bị đối phương dùng Xe và Hậu chồng cột chiếu hết. - 15 cp là điểm cân bằng hoàn hảo, giúp bot duy trì tấm khiên 2-3 Tốt quanh Vua trong suốt trung cuộc.",
+      "codeRef": {
+        "file": "student/evaluation.py",
+        "functionName": "_evaluate_king_safety",
+        "lines": "L70-105"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Ở giai đoạn tàn cuộc, thuật toán King Safety này có nên tiếp tục áp dụng không?",
+          "answer": "Dạ không, ở tàn cuộc Vua cần phải rời khỏi nơi trú ẩn để xông ra trung tâm trợ chiến cho Tốt; nếu tiếp tục phạt Vua hở sườn thì Vua sẽ sợ hãi trốn ở góc bàn cờ và thua cuộc."
+        },
+        {
+          "question": "Làm thế nào để tắt King Safety ở tàn cuộc?",
+          "answer": "Dạ, em kiểm tra tổng điểm vật chất quân nặng của đối phương; nếu đối phương không còn Hậu và chỉ còn 1 quân nhẹ thì King Safety tự động giảm về 0."
+        }
+      ]
+    },
+    "tags": [
+      "viet",
+      "king-safety",
+      "pawn-shield",
+      "15-centipawns",
+      "parameter-justification"
+    ]
+  },
+  {
+    "id": "MEM-VIET-20",
+    "title": "Việt - Q159: Triển khai đánh giá cặp Tượng (+30 cp) và Tốt thông (+20 cp)",
+    "question": "Bạn đã triển khai việc nhận diện và cộng điểm cho Cặp Tượng (Bishop Pair) và Tốt thông (Passed Pawn) trong evaluation.py như thế nào?",
+    "category": "evaluation",
+    "topic": "evaluation",
+    "memberTarget": "viet",
+    "memberRole": "Lượng giá & Tri thức cờ Chess960",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em triển khai bằng các thao tác bitboard cực nhanh của python-chess: (1) Cặp Tượng: Đếm len(board.pieces(chess.BISHOP, color)) == 2, nếu đúng cộng ngay +30 cp; (2) Tốt thông: Dùng mặt nạ bitboard kiểm tra xem phía trước quân Tốt trên cùng cột và 2 cột lân cận có quân Tốt đối phương nào không; nếu không có, đó là Tốt thông và được thưởng 20 cp cộng thêm điểm lũy tiến theo độ cao hàng cờ.",
+      "deepExplanation": "Theo Báo cáo mục 4.4 và chi tiết cài đặt: 1. Ý nghĩa cờ vua của Cặp Tượng (+30 cp): Khi sở hữu 2 Tượng (một ô trắng, một ô đen), người chơi kiểm soát được toàn bộ 64 ô cờ trên bàn. Hai Tượng phối hợp tầm xa tạo ra sức mạnh vượt trội hơn hẳn một Tượng và một Mã trong thế trận mở. 30 cp (gần bằng 1/3 quân Tốt) là giá trị chuẩn được các đại kiện tướng thế giới và các engine như Stockfish công nhận. 2. Cơ chế nhận diện Tốt thông (Passed Pawn): - Một quân Tốt trắng ở ô (r, c) là Tốt thông nếu trên các hàng từ r+1 đến 7 của các cột c-1, c, c+1 không có bất kỳ quân Tốt đen nào. - Em sử dụng phép toán bitwise mask của thư viện để kiểm tra trong 1 micro-giây. - Công thức thưởng: `Bonus = 20 + (rank - 2) * 10`. Càng tiến gần hàng 8 để phong Hậu (rank 6, 7), điểm thưởng càng tăng vọt, thúc đẩy bot đẩy Tốt thông quyết liệt trong tàn cuộc (như đã chứng minh trong ván POS-09).",
+      "codeRef": {
+        "file": "student/evaluation.py",
+        "functionName": "_evaluate_pawns_and_pieces",
+        "lines": "L90-135"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu hai quân Tượng cùng đi trên ô màu trắng (do phong cấp) thì có được thưởng cặp Tượng không?",
+          "answer": "Dạ không, hàm kiểm tra chuẩn phải đảm bảo hai Tượng đứng trên hai ô khác màu nhau, nhưng trong thực chiến cờ chuẩn trường hợp đó cực hiếm xảy ra."
+        },
+        {
+          "question": "Điểm thưởng Tốt thông ở hàng 7 là bao nhiêu?",
+          "answer": "Dạ, ở hàng 7 điểm thưởng là 20 + (7 - 2) * 10 = 70 cp, xấp xỉ gần bằng giá trị một quân Tốt mới, phản ánh nguy cơ phong Hậu cận kề."
+        }
+      ]
+    },
+    "tags": [
+      "viet",
+      "bishop-pair",
+      "passed-pawn",
+      "bitboard-mask",
+      "endgame-bonus"
+    ]
+  },
+  {
+    "id": "MEM-VIET-21",
+    "title": "Việt - Q160: Quy trình kiểm thử tính đối xứng và độ ổn định của hàm evaluate",
+    "question": "Bạn đã thực hiện quy trình kiểm thử nào để chứng minh hàm evaluate() của mình hoàn toàn không thiên vị màu quân (tính đối xứng) và không văng lỗi trên các thế cờ đặc biệt?",
+    "category": "evaluation",
+    "topic": "testing",
+    "memberTarget": "viet",
+    "memberRole": "Lượng giá & Tri thức cờ Chess960",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em xây dựng kịch bản kiểm thử tự động Mirror Board Test: Với mỗi thế cờ FEN thử nghiệm, em tạo thế cờ đối xứng qua gương bằng cách lật ngược các hàng và đảo màu quân cờ. Khẳng định bắt buộc là evaluate(board) + evaluate(mirrored_board) == 0 (tổng điểm bằng 0 tuyệt đối). Em đã chạy test này trên 100 thế cờ ngẫu nhiên để đảm bảo hàm evaluate không có bất kỳ bug lệch màu quân nào trước khi đưa vào thi đấu.",
+      "deepExplanation": "Theo Báo cáo mục 5.1 về phương pháp kiểm thử: 1. Sự nguy hiểm của lỗi bất đối xứng: Trong quá trình phát triển, nếu lập trình viên quên đảo ngược chỉ số mảng PST của quân Đen (quên không dùng `sq ^ 56`), quân Đen sẽ coi việc tiến quân xuống hàng 1 của mình là lùi quân, dẫn tới việc bot đánh rất dũng mãnh khi cầm Trắng nhưng lại tự sát khi cầm Đen. 2. Bài test kiểm tra thế cờ đặc biệt (Fuzzing/Edge Tests): - Kiểm tra bàn cờ trống quân chỉ còn 2 Vua: evaluate phải trả về 0. - Kiểm tra bàn cờ chỉ có Vua và Tốt sắp phong cấp. - Kiểm tra thế cờ có nhiều quân Hậu phong cấp cùng lúc. - Kiểm tra thế cờ Chess960 với cách bố trí quân kỳ dị nhất. 3. Kết quả kiểm thử: Toàn bộ 100% kịch bản kiểm thử đều vượt qua với độ lệch điểm đúng bằng 0 mili-centipawn, chứng minh độ tin cậy tuyệt đối của module.",
+      "codeRef": {
+        "file": "student/evaluation.py",
+        "functionName": "evaluate",
+        "lines": "L20-60"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao em dùng evaluate(board) + evaluate(mirrored) == 0 mà không dùng so sánh bằng?",
+          "answer": "Dạ, vì hàm evaluate trả về điểm tương đối theo góc nhìn bên đi; nếu thế cờ Trắng ưu thế +100 cp thì ở thế cờ gương Đen sẽ ưu thế +100 cp theo góc nhìn của Đen, nên hai điểm số cùng dấu dương theo lượt đi của họ."
+        },
+        {
+          "question": "Thời gian trung bình để chạy 1 lần evaluate là bao nhiêu micro-giây?",
+          "answer": "Dạ, đo bằng module cProfile đạt trung bình khoảng 25 micro-giây cho mỗi lần gọi evaluate trên CPU máy tính thông thường."
+        }
+      ]
+    },
+    "tags": [
+      "viet",
+      "mirror-test",
+      "symmetry-verification",
+      "fuzzing",
+      "cprofile"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-17",
+    "title": "Vương - Q161: Cơ chế Transposition Table và triển khai Zobrist Hash 64-bit",
+    "question": "Bạn đã triển khai bảng chuyển vị (Transposition Table) và khóa Zobrist Hash 64-bit trong search.py như thế nào để nhận diện các thế cờ trùng lặp?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em sử dụng mảng cố định 524,288 phần tử (đúng 2^19 mục) được khởi tạo bằng danh sách Python. Mỗi thế cờ được ánh xạ thành một khóa băm 64-bit duy nhất thông qua hàm băm Zobrist (sử dụng chess.polyglot.zobrist_hash của thư viện). Vị trí lưu trữ trong mảng được tính bằng phép toán bitwise siêu tốc: index = zobrist_key & (TABLE_SIZE - 1). Mỗi mục TTEntry lưu trữ: khóa đầy đủ, độ sâu đã duyệt, cờ giá trị (EXACT, LOWERBOUND, UPPERBOUND), điểm số và nước đi tốt nhất.",
+      "deepExplanation": "Theo Báo cáo mục 4.2 và 4.5: 1. Bản chất của Transposition trong cờ vua: Trong cây trò chơi, có rất nhiều chuỗi nước đi khác nhau dẫn tới cùng một thế cờ (ví dụ: 1. d4 Nf6 2. c4 e6 giống hệt 1. c4 e6 2. d4 Nf6). Nếu không có TT, bot sẽ phải tính toán lại từ đầu toàn bộ cây con bên dưới hàng ngàn lần. 2. Cấu trúc lưu trữ tối ưu: - Sử dụng `__slots__ = ('key', 'depth', 'flag', 'score', 'best_move')` cho lớp `TTEntry` giúp loại bỏ `__dict__` overhead của Python, tiết kiệm 60% bộ nhớ. - Kích thước `2^19` mục tiêu tốn đúng ~16 MiB RAM, nằm gọn trong Cache L3 của CPU. 3. Phép băm Bitwise Mask: Thay vì dùng phép chia lấy dư `% TABLE_SIZE` rất tốn chu kỳ CPU, phép `key & (TABLE_SIZE - 1)` chỉ mất đúng 1 chu kỳ vi xử lý, giúp việc tra cứu (probe) và lưu trữ (store) diễn ra trong vài nano-giây.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "TranspositionTable",
+        "lines": "L180-250"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Tại sao trong TTEntry phải lưu cả khóa key 64-bit đầy đủ mà không chỉ lưu index?",
+          "answer": "Dạ, vì có nhiều khóa khác nhau có thể ánh xạ vào cùng một index (va chạm băm); lưu khóa đầy đủ để khi probe ta so sánh entry.key == current_key, đảm bảo lấy đúng thế cờ chứ không lấy nhầm thế cờ khác."
+        },
+        {
+          "question": "Tỷ lệ TT Hit trung bình trong ván đấu của bot là bao nhiêu?",
+          "answer": "Dạ, tỷ lệ TT Hit trung bình đo được là 25.4%, giúp giảm hơn 40% số nút phải duyệt lại ở mỗi độ sâu mới."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "transposition-table",
+      "zobrist-hash",
+      "bitwise-indexing",
+      "tt-entry-slots"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-18",
+    "title": "Vương - Q162: Chiến lược thay thế bảng băm (Replacement Scheme) ưu tiên depth hay thế cờ mới",
+    "question": "Khi hai thế cờ có cùng index băm va chạm trong Transposition Table, bạn áp dụng quy tắc thay thế nào (ưu tiên độ sâu hay ưu tiên thế cờ mới) và tại sao?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em áp dụng chiến lược thay thế lai 'Ưu tiên Độ sâu có điều kiện' (Depth-Preferred with Age/Always-Replace fallback): Nếu mục mới có độ sâu tìm kiếm lớn hơn hoặc bằng mục cũ (new_depth >= old_depth), em luôn ghi đè; nếu mục mới có độ sâu nhỏ hơn nhưng khóa băm khác nhau hoàn toàn (va chạm vị trí), em vẫn giữ lại mục cũ có độ sâu cao hơn vì thông tin ở độ sâu lớn có giá trị tính toán tốn kém hơn nhiều lần.",
+      "deepExplanation": "Theo Báo cáo mục 4.3 và student/search.py: 1. Đánh đổi giữa các chiến lược thay thế kinh điển: - Always Replace (Luôn thay thế): Rất đơn giản, thế cờ mới luôn ghi đè thế cờ cũ. Nhược điểm: Một thế cờ ở độ sâu 1 của nhánh phụ vô nghĩa có thể xóa mất một nhánh chính đã duyệt tới độ sâu 5 tốn hàng chục ngàn nút. - Deepest (Luôn giữ độ sâu lớn nhất): Nhược điểm: Bảng băm nhanh chóng bị lấp đầy bởi các thế cờ ở các nước đi đầu tiên của ván cờ, không chịu cập nhật các thế cờ mới ở các nước đi sau. 2. Thuật toán của em: ```python\nif old_entry is None or new_depth >= old_entry.depth or current_age > old_entry.age:\n    self.table[index] = TTEntry(key, new_depth, flag, score, best_move, current_age)\n``` Điều này đảm bảo: Giữ lại những đánh giá chất lượng cao nhất ở độ sâu lớn, đồng thời các thế cờ từ những nước đi xa xưa trong quá khứ sẽ dần bị thay thế khi thế cờ mới xuất hiện.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "TranspositionTable.store",
+        "lines": "L235-265"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Khái niệm 'age' trong TT được cập nhật như thế nào?",
+          "answer": "Dạ, age là biến đếm số thứ tự nước đi của ván đấu; mỗi lần bot nhận nước đi mới từ trọng tài, age được tăng thêm 1."
+        },
+        {
+          "question": "Có nên chia TT thành 2 bảng (Two-tier TT) không?",
+          "answer": "Dạ, chia 2 bảng (1 bảng luôn giữ depth lớn nhất, 1 bảng luôn thay thế) là kỹ thuật rất tốt trong C++, nhưng trong Python nó làm tăng chi phí quản lý đối tượng nên em chọn giải pháp lai trong một bảng duy nhất."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "replacement-scheme",
+      "depth-preferred",
+      "table-aging",
+      "cache-thrashing"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-19",
+    "title": "Vương - Q163: Thuật toán sắp xếp nước đi Move Ordering và thứ tự ưu tiên MVV-LVA",
+    "question": "Hệ thống chấm điểm sắp xếp nước đi Move Ordering trong search.py được bạn thiết kế ra sao và tại sao MVV-LVA lại được xếp ưu tiên trước Killer Moves và History Heuristic?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, em phân tầng điểm số thành các lớp cách biệt hàng trăm nghìn đơn vị: (1) TT Move: 1,000,000 điểm; (2) MVV-LVA cho nước bắt quân: 800,000 - 900,000 điểm; (3) Killer Moves: 700,000 điểm; (4) History Heuristic: 0 - 600,000 điểm. MVV-LVA được ưu tiên trước Killer Moves vì nước bắt quân có lợi về vật chất mang tính sát thương trực tiếp và kiểm chứng được ngay lập tức, có xác suất gây Alpha/Beta cutoff cao hơn nhiều so với một nước đi tĩnh.",
+      "deepExplanation": "Theo Báo cáo mục 4.3 và hàm _score_move: 1. Mục tiêu tối thượng của Move Ordering: Đưa nước đi tốt nhất lên vị trí đầu tiên (duyệt đầu tiên). Nếu nước đầu tiên là nước tối ưu, Alpha-Beta chỉ cần duyệt O(b^(d/2)) nút thay vì O(b^d), tăng gấp đôi độ sâu tìm kiếm trong cùng thời gian. 2. Cơ sở ưu tiên MVV-LVA trước Killer: - MVV-LVA (Most Valuable Victim - Least Valuable Attacker): Đổi Tốt lấy Hậu hoặc Xe lấy Xe luôn tạo ra sự biến động vật chất lớn. Đối phương nếu không chống đỡ sẽ thua ngay lập tức. Đây là các biến thể cưỡng bức (forcing moves). - Killer Move: Là nước đi tĩnh (không bắt quân) từng gây cutoff ở nút anh em. Dù rất tốt, nhưng nó vẫn là nước tĩnh, không mang tính cưỡng bức cao bằng nước bắt quân có lời. 3. Sắp xếp bằng Timsort: Em tính toán điểm số phẳng dạng số nguyên int cho từng nước đi, sau đó gọi `moves.sort(key=lambda m: score, reverse=True)`. Timsort của Python chạy bằng C thuần cực kỳ nhanh.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "_score_move / order_moves",
+        "lines": "L120-175"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu nước đi trong TT là một nước tĩnh thì nó có được xếp trên MVV-LVA không?",
+          "answer": "Dạ có, TT Move luôn đứng số 1 (1,000,000 điểm) bất kể là nước tĩnh hay bắt quân, vì nó đã được chứng minh là nước tốt nhất ở độ sâu tìm kiếm trước đó."
+        },
+        {
+          "question": "Hệ số rẽ nhánh hiệu dụng (effective branching factor) của bot đạt được là bao nhiêu nhờ Move Ordering?",
+          "answer": "Dạ, hệ số rẽ nhánh giảm từ ~35 xuống chỉ còn xấp xỉ 3.8, cho phép bot duyệt sâu 4-5 ply trong vòng 2 giây."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "move-ordering",
+      "mvv-lva",
+      "killer-moves",
+      "effective-branching-factor"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-20",
+    "title": "Vương - Q164: Quiescence Search giải quyết hiệu ứng đường chân trời (Horizon Effect)",
+    "question": "Quiescence Search trong mã nguồn của bạn hoạt động như thế nào và nó giải quyết triệt để vấn đề hiệu ứng đường chân trời (Horizon Effect) ra sao?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, Quiescence Search (tìm kiếm yên lặng) được kích hoạt ngay khi Alpha-Beta chạm ngưỡng depth = 0. Thay vì dừng lại và gọi hàm evaluate ngay ở một thế cờ hỗn loạn đang xảy ra bắt quân, Quiescence Search tiếp tục mở rộng duyệt thêm các nước bắt quân và phong cấp Tốt cho đến khi bàn cờ trở nên tĩnh lặng hoàn toàn. Nó sử dụng kỹ thuật 'Điểm tĩnh đứng trước' (Stand-pat score) làm ngưỡng Alpha cơ sở để cắt tỉa nếu bên đi không muốn bắt quân tiếp.",
+      "deepExplanation": "Theo Báo cáo mục 4.2 và student/search.py: 1. Bản chất của Hiệu ứng đường chân trời (Horizon Effect): Giả sử ở depth=0, Trắng vừa dùng Hậu ăn Xe đối phương. Nếu dừng lại lượng giá, bot thấy mình đang hơn 1 Xe (+500 cp). Nhưng thực tế ở nước ngay sau đó (ply + 1), Tốt đen sẽ ăn lại Hậu trắng khiến Trắng lỗ ròng 4 điểm. Dừng tìm kiếm ở depth=0 sẽ tạo ra ảo tưởng ưu thế chết người. 2. Thuật toán Quiescence Search: - Bước 1: Tính điểm tĩnh `stand_pat = evaluate(board)`. Nếu `stand_pat >= beta`, trả về beta (Beta-cutoff ngay lập tức). - Bước 2: Cập nhật `alpha = max(alpha, stand_pat)`. - Bước 3: Chỉ lặp qua các nước đi bắt quân `board.generate_legal_captures()`. - Bước 4: Thử từng nước bắt quân, gọi đệ quy `score = -quiescence(-beta, -alpha)` và cập nhật alpha. 3. Kết quả: Thế cờ chỉ được đánh giá khi chuỗi tranh chấp quân cờ kết thúc trọn vẹn.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "quiescence_search",
+        "lines": "L260-315"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Khái niệm 'Stand-pat' có ý nghĩa gì về mặt lý thuyết trò chơi?",
+          "answer": "Dạ, Stand-pat dựa trên nguyên lý 'Null Move Option': Bên đi có quyền lựa chọn không bắt thêm quân nào nữa nếu việc bắt quân làm thế cờ xấu đi; điểm tĩnh hiện tại là giới hạn dưới an toàn của họ."
+        },
+        {
+          "question": "Tại sao Quiescence Search không bị lặp vô tận?",
+          "answer": "Dạ, vì số lượng quân cờ trên bàn cờ là hữu hạn, mỗi nước bắt quân làm giảm số quân cờ nên chuỗi bắt quân bắt buộc phải dừng lại sau một số ply nhất định."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "quiescence-search",
+      "horizon-effect",
+      "stand-pat",
+      "tactical-quiescence"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-21",
+    "title": "Vương - Q165: Tại sao chỉ mở rộng nước bắt quân và phong cấp trong Quiescence Search",
+    "question": "Tại sao trong Quiescence Search bạn chỉ mở rộng các nước bắt quân và phong cấp Tốt mà kiên quyết không duyệt các nước đi tĩnh thông thường?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "medium",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, vì nếu mở rộng cả các nước đi tĩnh trong Quiescence Search, cây tìm kiếm sẽ bị bùng nổ tổ hợp không thể kiểm soát và không bao giờ dừng lại, biến Quiescence Search thành một cây Alpha-Beta hoàn chỉnh vô tận. Các nước bắt quân và phong cấp Tốt là tập hợp hẹp các 'nước đi cưỡng bức' (forcing moves) làm thay đổi đột biến điểm vật chất, chỉ cần giải quyết xong tập nước này là thế cờ đã đủ độ yên lặng để lượng giá an toàn.",
+      "deepExplanation": "1. Nguy cơ bùng nổ phân nhánh (Branching Explosion): Trung bình một thế cờ có khoảng 35 nước đi hợp lệ, nhưng trong đó chỉ có từ 2 đến 5 nước là bắt quân. Nếu duyệt cả 35 nước, mỗi tầng Quiescence sẽ nhân số nút lên 35 lần, bot sẽ cạn kiệt thời gian ngay ở lượt đi đầu tiên. 2. Bản chất của nước phong cấp Tốt (Pawn Promotion): Nước phong Tốt biến một quân Tốt (100 cp) thành một quân Hậu (900 cp), tạo ra sự thay đổi tương đương hoặc lớn hơn một pha bắt quân nặng. Do đó, phong Tốt bắt buộc phải được xếp vào diện nước đi bão táp cần giải quyết trong Quiescence. 3. Sử dụng generator tối ưu của thư viện: Thư viện `python-chess` hỗ trợ phương thức `board.generate_legal_captures()` sinh trực tiếp các nước bắt quân mà không tốn công duyệt qua các nước tĩnh, giúp tiết kiệm tối đa chu kỳ CPU.",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "quiescence_search",
+        "lines": "L270-305"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Có trường hợp nào nước chiếu Vua (Check) cũng cần được mở rộng trong Quiescence không?",
+          "answer": "Dạ có, kỹ thuật Check Extensions trong Quiescence Search ở ply đầu tiên rất hữu ích để chống đòn chiếu rút, nhưng nhóm tạm thời chưa đưa vào để ưu tiên tốc độ tìm kiếm."
+        },
+        {
+          "question": "Delta Pruning được áp dụng trong Quiescence Search như thế nào để cắt tỉa thêm?",
+          "answer": "Dạ, nếu stand_pat + giá trị quân bị bắt + 200 cp < alpha, thì ngay cả khi bắt được quân ta vẫn không thể đuổi kịp alpha, nên có thể bỏ qua nước bắt quân đó ngay lập tức."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "quiescence-search",
+      "captures-only",
+      "forcing-moves",
+      "pawn-promotion"
+    ]
+  },
+  {
+    "id": "MEM-VUONG-22",
+    "title": "Vương - Q166: Phân tích đòn chiến thuật bị bỏ lỡ tại POS-05 và POS-10 dưới góc độ thuật toán tìm kiếm",
+    "question": "Dưới góc độ chuyên môn về thuật toán tìm kiếm, bạn phân tích như thế nào về nguyên nhân kỹ thuật khiến bot bỏ lỡ nước đi tối ưu Qd4 tại POS-05 và bị dính đòn phản công tại POS-10?",
+    "category": "search",
+    "topic": "search",
+    "memberTarget": "vuong",
+    "memberRole": "Thuật toán tìm kiếm & Tối ưu hóa",
+    "difficulty": "advanced",
+    "answer": {
+      "quickPitch": "Dạ thưa thầy, nguyên nhân gốc rễ ở cả hai tình huống là 'Khoảng trống thông tin giữa Alpha-Beta và Quiescence Search': Tại POS-05, Qd4 là một nước đi tĩnh mang tính đe dọa (Quiet Threat Move), không có trong MVV-LVA nên bị xếp cuối danh sách duyệt và bị timeout trước khi duyệt tới; tại POS-10, nước gài bẫy của đối thủ là nước tĩnh ở ply 4, Quiescence Search thấy không có bắt quân nên dừng lại và không nhìn thấy đòn chiếu mở ở ply 5.",
+      "deepExplanation": "Theo phân tích sâu các ván đấu thực nghiệm trong Báo cáo Chương 5 và 6: 1. Cơ chế thất bại tại POS-05: - Cây Alpha-Beta bị phụ thuộc quá mức vào các tín hiệu chiến thuật bề mặt (Check và Captures). Nước `Qe8+` được thưởng điểm nước chiếu nên được duyệt trước, mang lại điểm số tạm thời chấp nhận được khiến cửa sổ Alpha bị thu hẹp. Nước `Qd4` nằm lẫn trong 25 nước đi tĩnh còn lại, thời gian cho lượt đi cạn kiệt ở độ sâu 4 ply khiến nhánh của Qd4 bị cắt ngang trước khi chạm tới biến thể chiếu hết ở ply 6. 2. Cơ chế thất bại tại POS-10: - Ở ply 4, thế cờ rơi vào trạng thái 'Yên lặng giả tạo' (False Quiescence): Nước đi của đối phương là nước di chuyển Hậu chuẩn bị phục kích. Quiescence Search kiểm tra `board.generate_legal_captures()` thấy không có nước ăn quân nào có lợi, lập tức lấy điểm `stand_pat` và kết luận thế cờ an toàn. Ngay ở ply tiếp theo (ply 5), đòn chiếu mở `Bxh2+` bùng nổ thì đã nằm ngoài tầm nhìn của bot. 3. Giải pháp khắc phục thuật toán: Tích hợp Countermove History và mở rộng độ sâu 1 ply cho các nước đi đối mặt với mối đe dọa (Threat Extensions).",
+      "codeRef": {
+        "file": "student/search.py",
+        "functionName": "alpha_beta / quiescence_search",
+        "lines": "L320-375"
+      },
+      "teacherFollowUps": [
+        {
+          "question": "Nếu tăng tốc độ duyệt bằng Cython lên gấp 5 lần thì có giải quyết được POS-10 không?",
+          "answer": "Dạ chắc chắn giải quyết được, vì khi đó bot đạt tới độ sâu 6 ply trong cùng thời gian, đòn chiếu mở ở ply 5 và bắt Hậu ở ply 6 sẽ hoàn toàn nằm gọn trong tầm nhìn của Alpha-Beta."
+        },
+        {
+          "question": "Bài học lớn nhất của em về mặt thuật toán tìm kiếm sau giải đấu là gì?",
+          "answer": "Dạ, là nhận thức rõ ràng rằng thuật toán tìm kiếm không thể bù đắp hoàn toàn cho sự hạn chế về tốc độ duyệt của ngôn ngữ; việc tối ưu hóa mức hệ thống và vi xử lý có vai trò quan trọng ngang hàng với mô hình toán học."
+        }
+      ]
+    },
+    "tags": [
+      "vuong",
+      "pos-05",
+      "pos-10",
+      "false-quiescence",
+      "quiet-threats",
+      "algorithm-postmortem"
+    ]
   }
 ];
