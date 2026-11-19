@@ -84,7 +84,7 @@ export const OralDefenseSimulatorSection: React.FC = () => {
             'Trả lời dứt khoát không ngập ngừng trong 30 giây đầu',
             'Trình bày đúng luồng dữ liệu hoặc thuật toán liên quan',
             'Giải thích mối liên hệ giữa module này và module khác',
-            'Hóa giải câu hỏi bẫy của giảng viên',
+            'Trả lời câu hỏi mở rộng / vặn lại của giảng viên',
           ],
         }));
       }
@@ -103,7 +103,7 @@ export const OralDefenseSimulatorSection: React.FC = () => {
             'Nêu chính xác kiểu dữ liệu đầu vào và đầu ra',
             'Trình bày các bước thực hiện theo đúng thứ tự code chạy',
             'Nêu lý do thiết kế và hậu quả nếu bỏ hàm này',
-            'Hóa giải bẫy vấn đáp của thầy cô',
+            'Trả lời câu hỏi mở rộng / vặn lại của thầy cô',
           ],
         }));
 
@@ -167,11 +167,11 @@ export const OralDefenseSimulatorSection: React.FC = () => {
             source: 'ĐỀ THI TỔNG HỢP (Code)',
             title: `Hàm: ${f.name}`,
             subtitle: f.file,
-            prompt: `Giải thích chi tiết hàm ${f.name} trong ${f.file} và bẫy vấn đáp?`,
+            prompt: `Giải thích chi tiết hàm ${f.name} trong ${f.file}: vai trò, đầu vào, đầu ra, các bước thực thi và câu hỏi mở rộng của giảng viên?`,
             answer30s: f.memoryDefense,
             detail: f.role + '\n\n' + f.stepSequence.join('\n'),
             traps: [f.teacherTrap],
-            checklist: ['Đầu vào / Đầu ra', 'Các bước chạy', 'Bẫy câu hỏi'],
+            checklist: ['Đầu vào / Đầu ra', 'Các bước chạy', 'Câu hỏi mở rộng'],
           });
         });
         PARAMETERS_DATA.slice(0, 5).forEach((p: ParameterDossier) => {
@@ -462,7 +462,7 @@ export const OralDefenseSimulatorSection: React.FC = () => {
                 {currentQ.traps && currentQ.traps.length > 0 && (
                   <div className="bg-rose-950/30 border border-rose-900/40 rounded-xl p-4 space-y-2">
                     <h4 className="text-xs font-semibold text-rose-400 uppercase tracking-wider">
-                      🎯 Câu hỏi vặn lại giảng viên có thể hỏi dồn:
+                      🎯 Câu hỏi chất vấn thêm / Vặn lại của Giảng viên:
                     </h4>
                     <ul className="space-y-1.5 text-xs text-slate-300">
                       {currentQ.traps.map((t, idx) => (

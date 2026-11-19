@@ -45,7 +45,7 @@ export const FunctionDossiersSection: React.FC = () => {
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
               Tra cứu từng hàm trong mã nguồn: Vai trò, Input, Output, Thứ tự thực thi, Lý do thiết kế, 
-              Kịch bản lỗi và <span className="text-amber-400 font-medium">Bẫy vấn đáp của giảng viên</span>.
+              Kịch bản lỗi và <span className="text-amber-400 font-medium">Câu hỏi chất vấn mở rộng của giảng viên</span>.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export const FunctionDossiersSection: React.FC = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Tìm hàm, tham số, bẫy..."
+                placeholder="Tìm hàm, tham số, câu hỏi..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-48 md:w-64 bg-slate-950 border border-slate-800 text-xs rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
@@ -213,7 +213,7 @@ export const FunctionDossiersSection: React.FC = () => {
                   {/* Teacher Trap & 30s Defense Script */}
                   <div className="bg-gradient-to-r from-amber-950/30 via-slate-900 to-amber-950/20 border border-amber-500/30 rounded-xl p-5 space-y-3">
                     <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                      <span>🎯</span> Câu hỏi bẫy của Giảng viên khi vấn đáp:
+                      <span>🎯</span> Câu hỏi chất vấn mở rộng của Giảng viên khi vấn đáp:
                     </div>
                     <p className="text-sm font-semibold text-white italic">
                       "{dossier.teacherTrap}"

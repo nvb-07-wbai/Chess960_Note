@@ -9,10 +9,10 @@ export const MemberQASection: React.FC = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const members = [
-    { id: 'bach', name: 'Nguyễn Văn Bách', role: 'Kiến trúc & Bot Coordinator (bot.py)', count: 16 },
-    { id: 'long', name: 'Trần Phi Long', role: 'Thuật toán tìm kiếm & Alpha-Beta (search.py)', count: 16 },
-    { id: 'viet', name: 'Nguyễn Tiến Việt', role: 'Đánh giá thế cờ & Tapered Eval (evaluation.py)', count: 16 },
-    { id: 'vuong', name: 'Hồ Sĩ Vương', role: 'Sắp xếp nước đi & Quản lý thời gian (time_manager.py)', count: 16 },
+    { id: 'bach', name: 'Nông Văn Bách', role: 'Trưởng nhóm – Kiến trúc, IPC, bot.py, time_manager.py', count: 16 },
+    { id: 'long', name: 'Vũ Hoàng Long', role: 'Thuật toán tìm kiếm & Alpha-Beta, IDS (search.py)', count: 16 },
+    { id: 'viet', name: 'Lê Văn Việt', role: 'Đánh giá thế cờ PeSTO 32-bit & King Safety (evaluation.py)', count: 16 },
+    { id: 'vuong', name: 'Đỗ Thành Vương', role: 'Sắp xếp nước đi 8 bậc, SEE, Quiescence & Cắt tỉa (search.py)', count: 16 },
   ];
 
   const currentMemberInfo = members.find((m) => m.id === selectedMember) || members[0];
@@ -252,7 +252,7 @@ export const MemberQASection: React.FC = () => {
                   {q.answer.teacherFollowUps && q.answer.teacherFollowUps.length > 0 && (
                     <div className="bg-rose-950/20 border border-rose-900/30 rounded-xl p-4 space-y-2">
                       <h4 className="text-xs font-semibold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🎯</span> Bẫy chất vấn dồn dập của Giảng viên:
+                        <span>🎯</span> Câu hỏi chất vấn sâu / Điểm Giảng viên quan tâm:
                       </h4>
                       <div className="space-y-2 text-xs">
                         {q.answer.teacherFollowUps.map((tf, trapIdx) => (

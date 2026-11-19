@@ -180,7 +180,7 @@ export const GeneralQASection: React.FC = () => {
                   {q.answer.teacherFollowUps && q.answer.teacherFollowUps.length > 0 && (
                     <div className="bg-amber-950/20 border border-amber-900/30 rounded-xl p-4 space-y-2">
                       <h4 className="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🎯</span> Câu hỏi bẫy / Mở rộng giảng viên thường hỏi thêm:
+                        <span>🎯</span> Câu hỏi chất vấn sâu / Mở rộng giảng viên thường hỏi thêm:
                       </h4>
                       <div className="space-y-2 text-xs">
                         {q.answer.teacherFollowUps.map((tf, fIdx) => (

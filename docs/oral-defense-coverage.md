@@ -78,10 +78,10 @@ Tất cả 12 tham số đều có: Bản chất thuật toán, Lý do chọn gi
 
 - **32 Câu hỏi Chung (General Q&A)**: Phân bố thành 6 nhóm: Bài toán & Chess960, Kiến trúc 10 bước & IPC, Thuật toán tìm kiếm & Alpha-Beta, Đánh giá thế cờ Tapered, Quản lý thời gian 3 lớp, Thực nghiệm giải đấu 48 ván.
 - **64 Câu hỏi Cá nhân & Chất vấn chéo (Member Q&A)**: 16 câu / thành viên (8 câu chuyên trách + 8 câu chất vấn chéo).
-  - **Nguyễn Văn Bách (30% đóng góp)**: 8 câu về kiến trúc bot.py, IPC, TranspositionTable, phối hợp module + 8 câu chéo sang search/eval/move ordering.
-  - **Trần Phi Long (25% đóng góp)**: 8 câu về Negamax, Alpha-Beta, Aspiration Window, 5 tầng tỉa nhánh + 8 câu chéo sang bot/eval/time.
-  - **Nguyễn Tiến Việt (25% đóng góp)**: 8 câu về PeSTO packed 32-bit, Bitboard King Safety Ring, Tapered Eval + 8 câu chéo sang search/time/bot.
-  - **Hồ Sĩ Vương (20% đóng góp)**: 8 câu về 7 tầng Move Ordering, MVV-LVA, SEE, Time Manager 3 lớp + 8 câu chéo sang eval/search/bot.
+  - **Nông Văn Bách (30% đóng góp)**: 8 câu về kiến trúc bot.py, IPC, TranspositionTable, phối hợp module + 8 câu chéo sang search/eval/move ordering.
+  - **Vũ Hoàng Long (25% đóng góp)**: 8 câu về Negamax, Alpha-Beta, Aspiration Window, 5 tầng tỉa nhánh + 8 câu chéo sang bot/eval/time.
+  - **Lê Văn Việt (25% đóng góp)**: 8 câu về PeSTO packed 32-bit, Bitboard King Safety Ring, Tapered Eval + 8 câu chéo sang search/time/bot.
+  - **Đỗ Thành Vương (20% đóng góp)**: 8 câu về 8 tầng Move Ordering, MVV-LVA, SEE, Time Manager 3 lớp + 8 câu chéo sang eval/search/bot.
 
 ---
 
